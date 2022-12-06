@@ -11,7 +11,7 @@ ENDM
 .Stack 64
 .Data
     welcome db "Please enter your name :",'$'
-    enter   db "Plaese press enter to continue ",'$'
+    menter  db "Plaese press enter to continue ",'$'
     name1   db 30 ,?, 30 dup(?)
     mf1     db "To start chatting press F1 ",10,13,'$'
     mf2     db "To start Game press F2 ",10,13,'$'
@@ -35,7 +35,7 @@ main PROC FAR
                int         10h
     ;read from user
                mov         ah,0AH
-               mov         dx,offset name1-2
+               mov         dx,offset name1
                int         21h
     ;display enter
                mov         ah,2
@@ -43,7 +43,7 @@ main PROC FAR
                mov         dl,2
                int         10h
                mov         ah, 9
-               mov         dx, offset enter
+               mov         dx, offset menter
                int         21h
     ;wait for enter
     CHECK:     mov         ah,1
@@ -92,12 +92,12 @@ main PROC FAR
                mov         bh,0
                int         10h
                mov         cx,80
-    loop:      
+    myloop:    
                mov         ah,2
                mov         dl,'-'
                int         21h
                dec         cx
-               jnz         loop
+               jnz         myloop
     waitForKey:mov         ah,0
                int         16h
                cmp         ah,59
