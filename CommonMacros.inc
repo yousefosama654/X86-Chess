@@ -8,9 +8,9 @@ ShowMouse MACRO
               int 33h
 ENDM
 ChgVideoMode MACRO
-                   mov ah,0
-                   mov al,13h
-                   int 10h
+                 mov ah,0
+                 mov al,13h
+                 int 10h
 ENDM
 MoveCursor MACRO row,col
     ; U must send the paramters by hexa
@@ -57,7 +57,11 @@ CloseProgram MACRO
                  mov ah,4ch
                  int 21h
 ENDM
-ClearScreen MACRO 
-    mov ax,0003h
-    int 10h
+ClearScreen MACRO
+                mov ax,0003h
+                int 10h
+ENDM
+GetKeyPressedWait MACRO params
+                      mov ah,0
+                      int 16h
 ENDM
