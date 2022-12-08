@@ -23,7 +23,7 @@ MYWhiteRec MACRO startrow,startcol
                 mov   cx,startcol     ;Column //x
                 inc   dx              ;Row //y
                 mov   bx,0
-                add   bx,20
+                add   bx,23
                 add   bx,startrow
                 cmp   si,bx
                 jnz   square
@@ -48,7 +48,7 @@ MYBrownRec MACRO startrow,startcol
                 mov   cx,startcol     ;Column //x
                 inc   dx              ;Row //y
                 mov   bx,0
-                add   bx,20
+                add   bx,23
                 add   bx,startrow
                 cmp   si,bx
                 jnz   square
@@ -69,11 +69,11 @@ DrawGrid MACRO
               cmp        di,240
               jnz        row
               mov        di,0
-              add        RowVar,40
-              cmp        RowVar,160
+              add        RowVar,46
+              cmp        RowVar,184
               jnz        col
               mov        di,0
-              mov        rowvar,20
+              mov        rowvar,23
      col1:    
      row1:    
               MYBrownRec RowVar, di
@@ -83,8 +83,8 @@ DrawGrid MACRO
               cmp        di,240
               jnz        row1
               mov        di,0
-              add        RowVar,40
-              cmp        RowVar,140
+              add        RowVar,46
+              cmp        RowVar,161
               jnz        col1
 ENDM
 .model small
