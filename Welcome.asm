@@ -1,4 +1,4 @@
-include "D:\Download\githubtrial\X86-Chess\CommonMacros.inc"
+include "CommonMacros.inc"
 ClearScreen MACRO
                 mov ax,0003h
                 int 10h

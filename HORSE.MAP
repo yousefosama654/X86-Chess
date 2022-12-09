@@ -1,9 +1,2 @@
-
- Start  Stop   Length Name               Class
-
- 00000H 00040H 00041H _TEXT              CODE
- 00050H 001DFH 00190H _DATA              DATA
- 001E0H 0021FH 00040H STACK              STACK
-
-Program entry point at 0000:0000
+Fatal: Unable to open file 'd:\horse.obj'
 
