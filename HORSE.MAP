@@ -1,2 +1,9 @@
-Fatal: Unable to open file 'd:\horse.obj'
+
+ Start  Stop   Length Name               Class
+
+ 00000H 0004CH 0004DH HORSE_TEXT         CODE
+ 00050H 00151H 00102H _DATA              DATA
+ 00160H 0019FH 00040H STACK              STACK
+
+Program entry point at 0000:0000
 
