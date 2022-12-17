@@ -18,6 +18,7 @@ move_pawn macro
               add            di,cx
               mov            al,[di]+1
               mov            ah,0
+              mov team,al
               PUSH           AX
               cmp            al ,'1'
               je             team1
@@ -67,7 +68,7 @@ move_pawn macro
               mov            [di],'t'
               pop            ax
               mov            bx,0
-              highlight_goto al,bl
+              highlight_goto 
     exit:     
     
 endm
@@ -97,7 +98,7 @@ move_bishop macro
                 mov            di,ax
                 add            di,cx
                 mov            al,[di]+1
-                mov team,al
+                mov           team,al
                 PUSH           AX
                 cmp            al ,'1'
                 je             team1
@@ -139,9 +140,9 @@ move_bishop macro
                 add            di,bx
                 mov            [di],"t"
                 pop            ax
-                highlight_goto   team,flag
+                highlight_goto   
                 PUSH           AX
-                cmp flag,'f'
+                cmp highlight_flag,'f'
                 je  level2
                 jmp            compare1
 
@@ -180,9 +181,9 @@ move_bishop macro
                 mov            [di],"t"
                 pop            ax
                mov              bx,0
-                highlight_goto   team,flag
+                highlight_goto  
                 PUSH           AX
-                cmp flag,'f'
+                cmp highlight_flag,'f'
                 je  level3
                 jmp            compare2
 
@@ -221,9 +222,9 @@ move_bishop macro
                 mov            [di],"t"
                 pop            ax
                 mov              bx,0
-                highlight_goto   team,flag
+                highlight_goto  
                 PUSH           AX
-                cmp flag,'f'
+                cmp highlight_flag,'f'
                 je  level4
                 jmp            compare3
 
@@ -261,9 +262,8 @@ move_bishop macro
                 mov            [di],"t"
                 pop            ax
                 mov              bx,0
-               highlight_goto   team,flag
-                PUSH           AX
-                cmp flag,'f'
+               highlight_goto   
+                cmp highlight_flag,'f'
                 je  exit
                 jmp            compare4
 
@@ -293,7 +293,9 @@ move_rook macro
               add            ax,offset grid_row1
               mov            di,ax
               add            di,cx
-              mov            al,[di]+1
+              inc            di
+              mov            al,[di]
+              mov team,al
               PUSH           AX
               cmp            al ,'1'
               je             team1
@@ -331,9 +333,14 @@ move_rook macro
               add            di,bx
               mov            [di],"t"
               pop            ax
-              highlight_goto al
-              PUSH           AX
+              highlight_goto   
+                PUSH           AX
+                cmp highlight_flag,'f'
+                je  level2
               jmp            compare1
+               
+                
+
 
                 
     level2:   
@@ -366,8 +373,10 @@ move_rook macro
               add            di,bx
               mov            [di],"t"
               pop            ax
-              highlight_goto al
-              PUSH           AX
+              highlight_goto   
+                PUSH           AX
+                cmp highlight_flag,'f'
+                je  level3
               jmp            compare2
 
 
@@ -401,8 +410,10 @@ move_rook macro
               add            di,bx
               mov            [di],"t"
               pop            ax
-              highlight_goto al
-              PUSH           AX
+             highlight_goto   
+                PUSH           AX
+                cmp highlight_flag,'f'
+                je  level4
               jmp            compare3
 
     level4:   
@@ -435,8 +446,10 @@ move_rook macro
               add            di,bx
               mov            [di],"t"
               pop            ax
-              highlight_goto al
-              PUSH           AX
+              highlight_goto   
+                PUSH           AX
+                cmp highlight_flag,'f'
+                je  exit
               jmp            compare4
 
 
@@ -444,6 +457,7 @@ move_rook macro
     exit:     
 
 endm
+
 move_knight macro
                 local          team1
                 local          team2
@@ -471,6 +485,7 @@ move_knight macro
                 add            di,cx
                 mov            al,[di]+1
                 mov            ah,0
+                mov           team,al
                 PUSH           AX
                 cmp            al ,'1'
                 je             team1
@@ -516,8 +531,9 @@ move_knight macro
                 add            di,bx
                 mov            [di],'t'
                 pop            ax
-                highlight_goto al
+                highlight_goto 
                 push           ax
+                
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     choise2:    
                 mov            bx,selected_col
@@ -553,7 +569,7 @@ move_knight macro
                 add            di,bx
                 mov            [di],'t'
                 pop            ax
-                highlight_goto al
+                highlight_goto 
                 push           ax
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     choise3:    
@@ -590,7 +606,7 @@ move_knight macro
                 add            di,bx
                 mov            [di],'t'
                 pop            ax
-                highlight_goto al
+                highlight_goto 
                 push           ax
     ;     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     choise4:    
@@ -627,7 +643,7 @@ move_knight macro
                 add            di,bx
                 mov            [di],'t'
                 pop            ax
-                highlight_goto al
+                highlight_goto 
                 push           ax
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     choise5:    
@@ -664,7 +680,7 @@ move_knight macro
                 add            di,bx
                 mov            [di],'t'
                 pop            ax
-                highlight_goto al
+                highlight_goto 
                 push           ax
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     choise6:    
@@ -701,7 +717,7 @@ move_knight macro
                 add            di,bx
                 mov            [di],'t'
                 pop            ax
-                highlight_goto al
+                highlight_goto 
                 push           ax
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     choise7:    
@@ -738,7 +754,7 @@ move_knight macro
                 add            di,bx
                 mov            [di],'t'
                 pop            ax
-                highlight_goto al
+                highlight_goto 
                 push           ax
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     choise8:    
@@ -775,12 +791,12 @@ move_knight macro
                 add            di,bx
                 mov            [di],'t'
                 pop            ax
-                highlight_goto al
+                highlight_goto 
     
     exit:       
 endm
 
-highlight_goto macro  team,flag
+highlight_goto macro  
                    local            exit11
                    local back
                    mov              al,highlight_col_grid
@@ -801,10 +817,10 @@ highlight_goto macro  team,flag
                    mov              al,[di]
                    cmp              team,al
                    jz              exit11
-                  ; highlight_option
+                   highlight_option
                    jmp back
                    exit11:          
-                   mov              flag,'f'
+                   mov              highlight_flag,'f'
                    back:
 endm
 
@@ -1425,6 +1441,7 @@ move_current_cell_or_select macro clicked
     b:                          
                                 move_bishop
                                 jmp                exit1
+    move_pawn
 
     exit1:                      
                                 loop_until_goto
@@ -1845,7 +1862,7 @@ endm
 .data
     row                dw ?
     column             dw ?
-    team1_pos          dw 0,0 ,0,30  ,00,60,00,90,0,120,0,150,0,180,0,210
+    team1_pos          dw 0,0 ,0,30,00,60,00,90,0,120,0,150,0,180,0,210
                        dw 23,0,23,30,23,60 ,23,90,23,120,23,150,23,180,23,210
     team2_pos          dw 138,0,138,30,138,60,138,90,138,120,138,150,138,150,138,210
                        dw 161,0,161,30,161,60,161,90,161,120,161,150,161,180,161,210
@@ -1855,7 +1872,6 @@ endm
     current_row_grid   db 1
     current_col_grid   db 4
 
-    ; selected_pos dw -1
     selected_row       dw -1                                                                                                    ;;;;pixel
     selected_col       dw -1                                                                                                    ;;;;pixel
     selected_row_grid  db -1
@@ -1877,8 +1893,8 @@ endm
     RowVar             dw 0
     PieceHeight        dw 0
     color              db 0
-    flag               db 0
-    team              db 0
+    highlight_flag     db 0
+    team               db 0
     pawn               db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
                        db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
                        db 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h, 00h
@@ -2011,26 +2027,22 @@ endm
 
 
 main proc far
-         mov              ax,@data
-         mov              ds,ax
+         mov          ax,@data
+         mov          ds,ax
          ChgVideoMode
-         mov              ax,0A000H
-         mov              es,ax
+         mov          ax,0A000H
+         mov          es,ax
          DrawGrid
-         startpieces
+     startpieces
       
-         MY_HIGHLIGHT_Rec 00,0090
-         Draw             0,96,king,16,16,3
+     MY_HIGHLIGHT_Rec 00,0090
+     Draw             0,96,king,16,16,3
 
-         mov_until_select
+     mov_until_select
 
-    
-         
 
-     
-
-         mov              ah,4ch
-         int              21h
+         mov          ah,4ch
+         int          21h
 
 main endp
 end main
