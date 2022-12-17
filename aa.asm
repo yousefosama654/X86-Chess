@@ -1,14 +1,14 @@
 
 highlight_goto macro
-    ;    local            exit11
-    ;    local            exit22
-    ;    local            exit33
+                   local            exit11
+                   local            exit22
+                   local            exit33
                    local            back
                    mov              highlight_flag,'t'
                    mov              al,highlight_col_grid
+                   dec              al
                    mov              bl,3
                    mul              bl
-                   mov              ah,0
                    mov              cx,ax
                    mov              al,highlight_row_grid
                    dec              al
@@ -18,27 +18,28 @@ highlight_goto macro
                    add              ax,offset grid_row1
                    mov              di,ax
                    add              di,cx
+                   inc              di
                    mov              al,[di]
+                   cmp              al,'0'
+                   je               exit22
+                   cmp              team,al
+                   je               exit11
+                   cmp              team,al
+                   jnz              exit33
+                   jmp              back
+
+    exit22:        
                    highlight_option
-    ;                cmp              al,'0'
-    ;                je               exit22
-    ;                cmp              team,al
-    ;                jz               exit11
-    ;                cmp              team,al
-    ;                jnz              exit33
-    ;                jmp              back
+                   jmp              back
 
-    ; exit22:
-    ;                highlight_option
-    ;                jmp              back
+    exit33:        
+                   highlight_option
+                   mov              highlight_flag,'f'
+                   jmp              back
 
-    ; exit33:
-    ;                highlight_option
-    ;                mov              highlight_flag,'f'
-    ;                jmp              back
-
-    ; exit11:
-    ;                mov              highlight_flag,'f'
+    exit11:        
+                   mov              highlight_flag,'f'
+                   jmp              back
     back:          
 endm
 
@@ -541,7 +542,7 @@ move_current_cell_or_select macro clicked
                                 call               move_bishop
                                 jmp                exit1
     kg:                         
-                                 call               move_king
+                                call               move_king
                                 jmp                exit1
     q:                          
                                 call               move_bishop
@@ -1144,7 +1145,8 @@ move_pawn proc far
                          add                      ax,offset grid_row1
                          mov                      di,ax
                          add                      di,cx
-                         mov                      al,[di]+1
+                         inc                      di
+                         mov                      al,[di]
                          mov                      ah,0
                          mov                      team,al
                          cmp                      al ,'1'
@@ -1178,12 +1180,15 @@ move_pawn proc far
     pchange:             
                          mov                      bl, selected_row_grid
                          mov                      highlight_row_grid,bl
-                         add                       highlight_row_grid,dl
+                         add                      highlight_row_grid,dl
                          mov                      bh, selected_col_grid
                          mov                      highlight_col_grid,bh
                          add                      highlight_col_grid,dh
-                         call set_highlighled_true
                          highlight_goto
+                         cmp                      highlight_flag,'f'
+                         je                        pexit
+                         call                      set_highlighled_true
+                         jmp                       pexit
     pexit:               
                          ret
 move_pawn endp
@@ -1201,7 +1206,8 @@ move_bishop proc   far
                          add                      ax,offset grid_row1
                          mov                      di,ax
                          add                      di,cx
-                         mov                      al,[di]+1
+                         inc                      di
+                         mov                      al,[di]
                          mov                      team,al
                          cmp                      al ,'1'
                          je                       bteam1
@@ -1228,10 +1234,10 @@ move_bishop proc   far
                          je                       blevel2
                          add                      highlight_row_grid,1
                          add                      highlight_col_grid,1
-                         call set_highlighled_true
                          highlight_goto
                          cmp                      highlight_flag,'f'
                          je                       blevel2
+                         call                     set_highlighled_true
                          jmp                      bcompare1
 
                 
@@ -1254,10 +1260,10 @@ move_bishop proc   far
                          add                      highlight_row_grid,1
                          
                          sub                      highlight_col_grid,1
-                        call set_highlighled_true
                          highlight_goto
                          cmp                      highlight_flag,'f'
                          je                       blevel3
+                         call                     set_highlighled_true
                          jmp                      bcompare2
 
 
@@ -1280,10 +1286,10 @@ move_bishop proc   far
                          sub                      highlight_row_grid,1
                          
                          add                      highlight_col_grid,1
-                         call set_highlighled_true
                          highlight_goto
                          cmp                      highlight_flag,'f'
                          je                       blevel4
+                         call                     set_highlighled_true
                          jmp                      bcompare3
 
     blevel4:             
@@ -1305,10 +1311,10 @@ move_bishop proc   far
                          sub                      highlight_row_grid,1
                          
                          sub                      highlight_col_grid,1
-                         call set_highlighled_true
                          highlight_goto
                          cmp                      highlight_flag,'f'
                          je                       bexit
+                         call                     set_highlighled_true
                          jmp                      bcompare4
 
 
@@ -1355,10 +1361,10 @@ move_rook proc  far
                          cmp                      highlight_row,184
                          je                       rlevel2
                          add                      highlight_row_grid,1
-                         call set_highlighled_true
                          highlight_goto
                          cmp                      highlight_flag,'f'
                          je                       rlevel2
+                         call                     set_highlighled_true
                          jmp                      rcompare1
                
                 
@@ -1379,10 +1385,10 @@ move_rook proc  far
                          cmp                      highlight_row,-23
                          je                       rlevel3
                          sub                      highlight_row_grid,1
-                         call set_highlighled_true
                          highlight_goto
                          cmp                      highlight_flag,'f'
                          je                       rlevel3
+                         call                     set_highlighled_true
                          jmp                      rcompare2
 
 
@@ -1401,10 +1407,10 @@ move_rook proc  far
                          cmp                      highlight_col,240
                          je                       rlevel4
                          add                      highlight_col_grid,1
-                         call set_highlighled_true
                          highlight_goto
                          cmp                      highlight_flag,'f'
                          je                       rlevel4
+                         call                     set_highlighled_true
                          jmp                      rcompare3
 
     rlevel4:             
@@ -1422,10 +1428,10 @@ move_rook proc  far
                          cmp                      highlight_col,-30
                          je                       rexit
                          sub                      highlight_col_grid,1
-                         call set_highlighled_true
                          highlight_goto
                          cmp                      highlight_flag,'f'
                          je                       rexit
+                         call                     set_highlighled_true
                          jmp                      rcompare4
 
 
@@ -1447,7 +1453,8 @@ move_knight proc  far
                          add                      ax,offset grid_row1
                          mov                      di,ax
                          add                      di,cx
-                         mov                      al,[di]+1
+                         inc                      di
+                         mov                      al,[di]
                          mov                      ah,0
                          mov                      team,al
                          cmp                      al ,'1'
@@ -1478,9 +1485,12 @@ move_knight proc  far
                          ja                       choise2
                          add                      highlight_col_grid,2
                          add                      highlight_row_grid,1
-                        call set_highlighled_true
+                         
                          highlight_goto
-                
+                         cmp                      highlight_flag,'f'
+                         je                       choise2
+                         call                     set_highlighled_true
+                        
                 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     choise2:             
@@ -1501,9 +1511,10 @@ move_knight proc  far
                          jl                       choise3
                          add                      highlight_col_grid,2
                          sub                      highlight_row_grid,1
-                        call set_highlighled_true
                          highlight_goto
-                
+                         cmp                      highlight_flag,'f'
+                         je                       choise3
+                         call                     set_highlighled_true
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     choise3:             
                          mov                      bx,selected_col
@@ -1523,8 +1534,10 @@ move_knight proc  far
                          ja                       choise4
                          sub                      highlight_col_grid,2
                          add                      highlight_row_grid,1
-                        call set_highlighled_true
                          highlight_goto
+                         cmp                      highlight_flag,'f'
+                         je                       choise4
+                         call                     set_highlighled_true
                
     ;     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     choise4:             
@@ -1545,8 +1558,10 @@ move_knight proc  far
                          jl                       choise5
                          sub                      highlight_col_grid,2
                          sub                      highlight_row_grid,1
-                        call set_highlighled_true
                          highlight_goto
+                         cmp                      highlight_flag,'f'
+                         je                       choise5
+                         call                     set_highlighled_true
                
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     choise5:             
@@ -1567,8 +1582,10 @@ move_knight proc  far
                          ja                       choise6
                          add                      highlight_col_grid,1
                          add                      highlight_row_grid,2
-                       call set_highlighled_true
                          highlight_goto
+                         cmp                      highlight_flag,'f'
+                         je                       choise6
+                         call                     set_highlighled_true
                
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     choise6:             
@@ -1589,8 +1606,10 @@ move_knight proc  far
                          ja                       choise7
                          sub                      highlight_col_grid,1
                          add                      highlight_row_grid,2
-                        call set_highlighled_true
                          highlight_goto
+                         cmp                      highlight_flag,'f'
+                         je                       choise7
+                         call                     set_highlighled_true
                
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     choise7:             
@@ -1611,8 +1630,10 @@ move_knight proc  far
                          jl                       choise8
                          add                      highlight_col_grid,1
                          sub                      highlight_row_grid,2
-                        call set_highlighled_true
                          highlight_goto
+                         cmp                      highlight_flag,'f'
+                         je                       choise8
+                         call                     set_highlighled_true
                
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     choise8:             
@@ -1633,10 +1654,12 @@ move_knight proc  far
                          jl                       kexit
                          sub                      highlight_col_grid,1
                          sub                      highlight_row_grid,2
-                        call set_highlighled_true
                          highlight_goto
+                         cmp                      highlight_flag,'f'
+                         je                       kexit
+                         call                     set_highlighled_true
     
-    kexit: ret               
+    kexit:               ret
                         
 move_knight endp
 loop_until_goto proc far
@@ -1667,14 +1690,15 @@ move_piece proc far
                          mov                      bl,8
                          mul                      bl
                          mov                      bl,goto_col_grid
+                         mov                      bh,0
                          dec                      bl
-                         add                      al,bl
+                         add                      ax,bx
                          mov                      di ,offset highlight_row1
-                         mov                      ah,0
                          add                      di,ax
                          mov                      cl,[di]
-    ;    cmp                cl,'f'
-    ;    je                 exit
+                         mov                      al,'f'
+                         cmp                      cl,al
+                         je                       exit
 
                          mov                      al,selected_col_grid
                          dec                      al
@@ -1696,12 +1720,11 @@ move_piece proc far
 
                          mov                      ch,[di]+1                    ;;;team color
                          push                     cx
-                         mov                      [di],'0'
-
-               
-    ;   inc di
-    ;    mov                [di],'0'
-    ;    dec di
+                         mov                      al,'0'
+                         mov                      [di],al
+                         inc                      di
+                         mov                      al,'0'
+                         mov                      [di],al
              
 
                          mov                      ax,selected_col
@@ -1760,7 +1783,7 @@ move_piece proc far
                          mov                      selected_row_grid,-1
                          mov                      selected_col_grid,-1
 
-     
+    exit:                
                          ret
 move_piece endp
 move_king proc far
@@ -1777,7 +1800,8 @@ move_king proc far
                          add                      ax,offset grid_row1
                          mov                      di,ax
                          add                      di,cx
-                         mov                      al,[di]+1
+                         inc                      di
+                         mov                      al,[di]
                          mov                      ah,0
                          mov                      team,al
                          cmp                      al ,'1'
@@ -1803,8 +1827,11 @@ move_king proc far
                          cmp                      highlight_row,-23
                          je                       m2
                          sub                      highlight_row_grid,1
-                         call                     set_highlighled_true
                          highlight_goto
+                         cmp                      highlight_flag,'f'
+                         je                       m2
+                         call                     set_highlighled_true
+                        
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     m2:                                                                        ;;;;;;;;;;;;;-1r  +1c
                          mov                      bx,selected_col
@@ -1824,8 +1851,10 @@ move_king proc far
                          je                       m3
                          sub                      highlight_row_grid,1
                          add                      highlight_col_grid,1
-                         call                     set_highlighled_true
                          highlight_goto
+                         cmp                      highlight_flag,'f'
+                         je                       m3
+                         call                     set_highlighled_true
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     m3:                                                                        ;;;;;;;;;;;;;  +1c
                          mov                      bx,selected_col
@@ -1841,8 +1870,10 @@ move_king proc far
                          cmp                      highlight_col,240
                          je                       m4
                          add                      highlight_col_grid,1
-                         call                     set_highlighled_true
                          highlight_goto
+                         cmp                      highlight_flag,'f'
+                         je                       m4
+                         call                     set_highlighled_true
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     m4:                                                                        ;;;;;;;;;;;;;+1r  +1c
                          mov                      bx,selected_col
@@ -1862,10 +1893,12 @@ move_king proc far
                          je                       m5
                          add                      highlight_row_grid,1
                          add                      highlight_col_grid,1
-                         call                     set_highlighled_true
                          highlight_goto
+                         cmp                      highlight_flag,'f'
+                         je                       m5
+                         call                     set_highlighled_true
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    m5:                                                                        ;;;;;;;;;;;;;+1r 
+    m5:                                                                        ;;;;;;;;;;;;;+1r
                          mov                      bx,selected_col
                          mov                      highlight_col,bx
                          mov                      cx,selected_row
@@ -1879,8 +1912,10 @@ move_king proc far
                          cmp                      highlight_row,184
                          je                       m6
                          add                      highlight_row_grid,1
-                         call                     set_highlighled_true
                          highlight_goto
+                         cmp                      highlight_flag,'f'
+                         je                       m6
+                         call                     set_highlighled_true
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     m6:                                                                        ;;;;;;;;;;;;;+1r  -1c
                          mov                      bx,selected_col
@@ -1900,8 +1935,10 @@ move_king proc far
                          je                       m7
                          add                      highlight_row_grid,1
                          sub                      highlight_col_grid,1
-                         call                     set_highlighled_true
                          highlight_goto
+                         cmp                      highlight_flag,'f'
+                         je                       m7
+                         call                     set_highlighled_true
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     m7:                                                                        ;;;;;;;;;;;;;-1c
                          mov                      bx,selected_col
@@ -1917,8 +1954,10 @@ move_king proc far
                          cmp                      highlight_col,-30
                          je                       m8
                          sub                      highlight_col_grid,1
-                         call                     set_highlighled_true
                          highlight_goto
+                         cmp                      highlight_flag,'f'
+                         je                       m8
+                         call                     set_highlighled_true
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     m8:                                                                        ;;;;;;;;;;;;;-1r  -1c
                          mov                      bx,selected_col
@@ -1938,9 +1977,10 @@ move_king proc far
                          je                       jexit
                          sub                      highlight_col_grid,1
                          sub                      highlight_row_grid,1
-                         call                     set_highlighled_true
                          highlight_goto
-                          jmp jexit
+                         cmp                      highlight_flag,'f'
+                         je                       jexit
+                         call                     set_highlighled_true
 
 
     jexit:               ret
@@ -1960,7 +2000,8 @@ set_highlighled_true proc far
                          mov                      bl,bh
                          mov                      bh,0
                          add                      di,bx
-                         mov                      [di],'t'
+                         mov                      al,'t'
+                         mov                      [di],al
                          ret
 set_highlighled_true endp
 
