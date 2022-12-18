@@ -16,7 +16,8 @@ move_pawn macro
               add            ax,offset grid_row1
               mov            di,ax
               add            di,cx
-              mov            al,[di]+1
+              inc  di
+              mov            al,[di]
               mov            ah,0
               mov team,al
               PUSH           AX
