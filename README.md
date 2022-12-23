@@ -41,14 +41,14 @@ Two functions are to be implemented: chatting, and a two-player real-time chess 
     </td>
     <td align="center">
         <a href="https://github.com/nesma-shafie">
-            <img src="https://avatars.githubusercontent.com/<nesma-shafie>" width="100;" alt="nesma-shafie"/>
+            <img src="https://avatars.githubusercontent.com/u/120175134?v=4" width="100;" alt="nesma-shafie"/>
             <br />
             <sub><b>Nesma</b></sub>
         </a>
     </td>
     <td align="center">
         <a href="https://github.com/Sara-Gamal1">
-            <img src="https://avatars.githubusercontent.com/<Sara-Gamal1>" width="100;" alt="Sara-Gamal1"/>
+            <img src="https://avatars.githubusercontent.com/u/106556638?v=4" width="100;" alt="Sara-Gamal1"/>
             <br />
             <sub><b>Sara</b></sub>
         </a>
