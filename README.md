@@ -30,7 +30,7 @@ Two functions are to be implemented: chatting, and a two-player real-time chess 
 </p> 
 
 <!-- readme: collaborators -start -->
-<table>
+<table  align='center'> 
 <tr>
     <td align="center">
         <a href="https://github.com/yousefosama654">
