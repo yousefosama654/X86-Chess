@@ -5,7 +5,7 @@
  </div>
  <h2 align='center'> 🕮 Introduction & Background 🕮 </h2>
 <p align='justify'>
-his section presents an overview of the project requirements and constraints. Specific details are
+This section presents an overview of the project requirements and constraints. Specific details are
 discussed later. It is required to connect 2 PCs through a Simple network, using serial communication.
 Two functions are to be implemented: chatting, and a two-player real-time chess game.
   </p>
