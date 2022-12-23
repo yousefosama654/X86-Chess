@@ -1,4 +1,3 @@
-# X86-Chess
 <h1 align='center'>Real Time Chess</h1>
 <div align='center'>
    <img  src="/Images/logo.jpeg"  >
