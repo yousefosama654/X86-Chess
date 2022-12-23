@@ -1993,6 +1993,8 @@ move_king proc far
                                  cmp                      highlight_flag,'f'
                                  je                       jexit
                                  call                     far ptr                     set_highlighled_true
+
+
     jexit:                       ret
 move_king endp
 

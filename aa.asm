@@ -1,48 +1,4 @@
 
-highlight_goto macro
-                   local            exit11
-                   local            exit22
-                   local            exit33
-                   local            back
-                   mov              highlight_flag,'t'
-                   mov              al,highlight_col_grid
-                   dec              al
-                   mov              bl,3
-                   mul              bl
-                   mov              cx,ax
-                   mov              al,highlight_row_grid
-                   dec              al
-                   mov              ah,0
-                   mov              bl,24
-                   mul              bl
-                   add              ax,offset grid_row1
-                   mov              di,ax
-                   add              di,cx
-                   inc              di
-                   mov              al,[di]
-                   cmp              al,'0'
-                   je               exit22
-                   cmp              team,al
-                   je               exit11
-                   cmp              team,al
-                   jnz              exit33
-                   jmp              back
-
-    exit22:        
-                   highlight_option
-                   jmp              back
-
-    exit33:        
-                   highlight_option
-                   mov              highlight_flag,'f'
-                   jmp              back
-
-    exit11:        
-                   mov              highlight_flag,'f'
-                   jmp              back
-    back:          
-endm
-
 highlight_option macro
                        
                      local team1
@@ -100,12 +56,12 @@ highlight_option macro
                      je    team1
                      cmp   al,'2'
                      je    team2
-                     jmp   exit
+                     jmp far ptr   exit
 
     team1:           mov   check_color,3h
-                     jmp   to_piece
+                     jmp far ptr   to_piece
     team2:           mov   check_color,0h
-                     jmp   to_piece
+                     jmp far ptr   to_piece
 
     to_piece:        
                      
@@ -138,7 +94,7 @@ highlight_option macro
                      je    Bishop_draw
                      cmp   al,'r'
                      je    rook_draw
-                     jmp   exit
+                     jmp far ptr   exit
 
     horse_draw:      
                      mov   cx,highlight_col
@@ -149,7 +105,7 @@ highlight_option macro
                      mov   dl,check_color
                      Draw  row,column,knight,20,20,dl
                      sub   column,6
-                     jmp   exit
+                     jmp far ptr   exit
 
     queen_draw:      
                      mov   cx,highlight_col
@@ -160,7 +116,7 @@ highlight_option macro
                      mov   dl,check_color
                      Draw  row,column,queen,13,16,dl
                      sub   column,6
-                     jmp   exit
+                     jmp far ptr   exit
 
 
     pwan_draw:       
@@ -172,7 +128,7 @@ highlight_option macro
                      mov   dl,check_color
                      Draw  row,column,pawn,16,16,dl
                      sub   column,6
-                     jmp   exit
+                     jmp far ptr   exit
 
     king_draw:       
                      mov   cx,highlight_col
@@ -183,7 +139,7 @@ highlight_option macro
                      mov   dl,check_color
                      Draw  row,column,king,16,16,dl
                      sub   column,6
-                     jmp   exit
+                     jmp far ptr   exit
 
 
     Bishop_draw:     
@@ -195,7 +151,7 @@ highlight_option macro
                      mov   dl,check_color
                      Draw  row,column,Bishop,17,16,dl
                      sub   column,6
-                     jmp   exit
+                     jmp far ptr   exit
 
 
     rook_draw:       
@@ -207,10 +163,210 @@ highlight_option macro
                      mov   dl,check_color
                      Draw  row,column,rook,16,16,dl
                      sub   column,6
-                     jmp   exit
+                     jmp far ptr   exit
     exit:            
 
 endm
+mov_until_select macro
+                     local                       exit
+                     local                       check
+                     pusha
+    check:           
+                     mov                         ah,01H
+                     int                         16h
+                     jz                          check
+                     mov                         ah,00
+                     int                         16h
+                     move_current_cell_or_select ah
+                     jmp far ptr                         check
+    exit:            
+                     popa
+endm
+HIGHLIGHT_selected macro flag
+                       local            draw_b
+                       local            draw_w
+                       local            to_team_color
+                       local            team1
+                       local            team2
+                       local            to_piece
+                       local            horse_draw
+                       local            pwan_draw
+                       local            king_draw
+                       local            queen_draw
+                       local            Bishop_draw
+                       local            rook_draw
+                       local            exit
+                       local            draw_highlight
+
+
+                       mov              cl,flag
+                       cmp              cl,0
+                       jne              draw_highlight
+                       mov              al,current_col_grid
+                       dec              al
+                       mov              bl,3
+                       mul              bl
+                       mov              cx,ax
+
+                       mov              al,current_row_grid
+                       dec              al
+                       mov              ah,0
+                       mov              bl,24
+                       mul              bl
+                       add              ax,offset grid_row1
+                       mov              di,ax
+                       add              di,cx
+    ; here is the start of copy
+                       mov              al,[di]+2
+                       cmp              al ,'w'
+                       je               draw_w
+                       cmp              al ,'b'
+                       je               draw_b
+                       jmp far ptr              exit
+
+
+
+    draw_b:            
+
+                       MYBrownRec       row,column
+
+                       jmp far ptr              to_team_color
+    draw_w:            
+
+                       MYWhiteRec       row,column
+                       jmp far ptr              to_team_color
+
+    draw_highlight:                                                   ; will be deleted soon (Nesma)
+
+
+                       MY_HIGHLIGHT_Rec current_row,current_col
+                       jmp far ptr              to_team_color
+
+
+
+    to_team_color:     
+                       mov              al,current_col_grid
+                       dec              al
+                       mov              bl,3
+                       mul              bl
+                       mov              cx,ax
+
+
+                       mov              al,current_row_grid
+                       dec              al
+                       mov              ah,0
+                       mov              bl,24
+                       mul              bl
+                       add              ax,offset grid_row1
+                       mov              di,ax
+                       add              di,cx
+                       mov              al,[di]+1
+                       cmp              al ,'1'
+                       je               team1
+                       cmp              al,'2'
+                       je               team2
+                       jmp far ptr              exit
+
+    team1:             mov              check_color,3h
+                       jmp far ptr              to_piece
+    team2:             mov              check_color,0h
+                       jmp far ptr              to_piece
+
+    to_piece:          
+                       mov              al,current_col_grid
+                       dec              al
+                       mov              bl,3
+                       mul              bl
+                       mov              bx,ax
+
+                       mov              al,current_col_grid
+                       dec              al
+                       mov              bl,3
+                       mul              bl
+                       mov              cx,ax
+
+
+                       mov              al,current_row_grid
+                       dec              al
+                       mov              ah,0
+                       mov              bl,24
+                       mul              bl
+                       add              ax,offset grid_row1
+                       mov              di,ax
+                       add              di,cx
+                       mov              al,[di]
+                       cmp              al,'h'
+                       je               horse_draw
+                       cmp              al,'q'
+                       je               queen_draw
+                       cmp              al,'p'
+                       je               pwan_draw
+                       cmp              al,'k'
+                       je               king_draw
+                       cmp              al,'b'
+                       je               Bishop_draw
+                       cmp              al,'r'
+                       je               rook_draw
+                       jmp far ptr              exit
+
+    horse_draw:        
+                       add              column,6
+                       mov              dl,check_color
+
+                       Draw             row,column,knight,20,20,dl
+                       sub              column,6
+                       jmp far ptr              exit
+
+    queen_draw:        
+
+                       add              column,6
+                       mov              dl,check_color
+                       Draw             row,column,queen,13,16,dl
+                       sub              column,6
+                       jmp far ptr              exit
+
+
+    pwan_draw:         
+
+                       add              column,6
+                       mov              dl,check_color
+                       Draw             row,column,pawn,16,16,dl
+                       sub              column,6
+                       jmp far ptr              exit
+
+    king_draw:         
+
+                       add              column,6
+                       mov              dl,check_color
+                       Draw             row,column,king,16,16,dl
+                       sub              column,6
+                       jmp far ptr              exit
+
+
+    Bishop_draw:       
+
+                       add              column,6
+                       mov              dl,check_color
+                       Draw             row,column,Bishop,17,16,dl
+                       sub              column,6
+                       jmp far ptr              exit
+
+
+    rook_draw:         
+                       add              column,6
+                       mov              dl,check_color
+                       Draw             row,column,rook,16,16,dl
+                       sub              column,6
+                       jmp far ptr              exit
+
+    exit:              
+
+
+endm
+
+
+
+
 
 move_goto_cell_or_select macro clicked
                              local              up
@@ -221,18 +377,18 @@ move_goto_cell_or_select macro clicked
                              local              exit
                              pusha
 
-                             cmp                clicked,75             ;;;left
+                             cmp                clicked,75                          ;;;left
                              je                 left
-                             cmp                clicked,72             ;;;up
+                             cmp                clicked,72                          ;;;up
                              je                 up
-                             cmp                clicked,80             ;;;down
+                             cmp                clicked,80                          ;;;down
                              je                 down
-                             cmp                clicked,77             ;;;right
+                             cmp                clicked,77                          ;;;right
                              je                 right
-                             cmp                clicked,28             ;;;enter
+                             cmp                clicked,28                          ;;;enter
                              je                 enter
 
-                             jmp                exit
+                             jmp far ptr                exit
 
     left:                    
                              cmp                current_col,00
@@ -255,7 +411,7 @@ move_goto_cell_or_select macro clicked
                              mov                column,dx
                              pop                dx
                              HIGHLIGHT_selected 1
-                             jmp                exit
+                             jmp far ptr                exit
 
 
 
@@ -280,7 +436,7 @@ move_goto_cell_or_select macro clicked
                              mov                column,dx
                              pop                dx
                              HIGHLIGHT_selected 1
-                             jmp                exit
+                             jmp far ptr                exit
 
     up:                      
                              cmp                current_row,0
@@ -303,7 +459,7 @@ move_goto_cell_or_select macro clicked
                              mov                column,dx
                              pop                dx
                              HIGHLIGHT_selected 1
-                             jmp                exit
+                             jmp far ptr                exit
 
     right:                   
                              cmp                current_col,210
@@ -325,7 +481,7 @@ move_goto_cell_or_select macro clicked
                              mov                column,dx
                              pop                dx
                              HIGHLIGHT_selected 1
-                             jmp                exit
+                             jmp far ptr                exit
 
     enter:                   
                              mov                ax,current_col
@@ -340,9 +496,9 @@ move_goto_cell_or_select macro clicked
                              mov                al,current_row_grid
                              mov                goto_row_grid,al
 
-                             call               move_piece
+                             call               far ptr               move_piece
 
-                             jmp                exit
+                             jmp far ptr                exit
     exit:                    
                              popa
 endm
@@ -364,18 +520,18 @@ move_current_cell_or_select macro clicked
                               
                                 pusha
 
-                                cmp                clicked,75              ;;;left
+                                cmp                clicked,75                               ;;;left
                                 je                 left
-                                cmp                clicked,72              ;;;up
+                                cmp                clicked,72                               ;;;up
                                 je                 up
-                                cmp                clicked,80              ;;;down
+                                cmp                clicked,80                               ;;;down
                                 je                 down
-                                cmp                clicked,77              ;;;right
+                                cmp                clicked,77                               ;;;right
                                 je                 right
-                                cmp                clicked,28              ;;;enter
+                                cmp                clicked,28                               ;;;enter
                                 je                 enter
 
-                                jmp                exit
+                                jmp far ptr                exit
 
     left:                       
                                 cmp                current_col,00
@@ -398,7 +554,7 @@ move_current_cell_or_select macro clicked
                                 mov                column,dx
                                 pop                dx
                                 HIGHLIGHT_selected 1
-                                jmp                exit
+                                jmp far ptr                exit
 
 
 
@@ -423,7 +579,7 @@ move_current_cell_or_select macro clicked
                                 mov                column,dx
                                 pop                dx
                                 HIGHLIGHT_selected 1
-                                jmp                exit
+                                jmp far ptr                exit
 
     up:                         
                                 cmp                current_row,0
@@ -446,7 +602,7 @@ move_current_cell_or_select macro clicked
                                 mov                column,dx
                                 pop                dx
                                 HIGHLIGHT_selected 1
-                                jmp                exit
+                                jmp far ptr                exit
 
     right:                      
                                 cmp                current_col,210
@@ -468,7 +624,7 @@ move_current_cell_or_select macro clicked
                                 mov                column,dx
                                 pop                dx
                                 HIGHLIGHT_selected 1
-                                jmp                exit
+                                jmp far ptr                exit
 
     enter:                      
    
@@ -527,57 +683,95 @@ move_current_cell_or_select macro clicked
                                 je                 q
                                 cmp                al,'k'
                                 je                 kg
-                                jmp                exit
+                                jmp far ptr                exit
     kh:                         
-                                call               move_knight
-                                jmp                exit1
+                                call               far ptr               move_knight
+                                jmp far ptr                exit1
    
     p:                          
-                                call               move_pawn
-                                jmp                exit1
+                                call               far ptr               move_pawn
+                                jmp far ptr                exit1
     r:                          
-                                call               move_rook
-                                jmp                exit1
+                                call               far ptr               move_rook
+                                jmp far ptr                exit1
     b:                          
-                                call               move_bishop
-                                jmp                exit1
+                                call               far ptr               move_bishop
+                                jmp far ptr                exit1
     kg:                         
-                                call               move_king
-                                jmp                exit1
+                                call               far ptr               move_king
+                                jmp far ptr                exit1
     q:                          
-                                call               move_bishop
-                                call               move_rook
-                                jmp                exit1
+                                call               far ptr               move_bishop
+                                call               far ptr               move_rook
+                                jmp far ptr                exit1
 
     exit1:                      
-                                call               loop_until_goto
-                                jmp                exit
+                                call               far ptr               loop_until_goto
+    ; call               far ptr               Dehighlight_Grid
+                                DrawGrid
+                                jmp far ptr                exit
     exit:                       
 endm
 
-mov_until_select macro
-                     local                       exit
-                     local                       check
-                     pusha
-    check:           
-                     mov                         ah,01H
-                     int                         16h
-                     jz                          check
-                     mov                         ah,00
-                     int                         16h
-                     move_current_cell_or_select ah
-                     jmp                         check
-    exit:            
-                     popa
+
+
+
+
+
+
+highlight_goto macro
+                   local            exit11
+                   local            exit22
+                   local            exit33
+                   local            back
+                   mov              highlight_flag,'t'
+                   mov              al,highlight_col_grid
+                   dec              al
+                   mov              bl,3
+                   mul              bl
+                   mov              cx,ax
+                   mov              al,highlight_row_grid
+                   dec              al
+                   mov              ah,0
+                   mov              bl,24
+                   mul              bl
+                   add              ax,offset grid_row1
+                   mov              di,ax
+                   add              di,cx
+                   inc              di
+                   mov              al,[di]
+    ; means that cell is empty
+                   cmp              al,'0'
+                   je               exit22
+    ; team is my team
+    ; team2 is not my team
+
+    ;one of my team
+                   cmp              team,al
+                   je               exit11
+    ;not one of my team
+                   cmp              team,al
+                   jnz              exit33
+                   jmp far ptr              back
+    exit22:        
+                   highlight_option
+                   jmp far ptr              back
+    exit33:        
+                   highlight_option
+    ;highlight flag is = false to break the loop of highlight
+                   mov              highlight_flag,'0'
+                   jmp far ptr              back
+    exit11:        
+    ;highlight flag is = false to break the loop of highlight
+                   mov              highlight_flag,'f'
+                   jmp far ptr              back
+    back:          
 endm
-
-
 ChgVideoMode MACRO
                  mov ah,0
                  mov al,13h
                  int 10h
 ENDM
-
 MYWhiteRec MACRO startrow,startcol
                local square
                local right
@@ -714,7 +908,6 @@ drawRow macro
                pop   cx
                pop   di
 endm
-
 MY_HIGHLIGHT_Rec MACRO startrow,startcol
                      local square
                      local right
@@ -740,7 +933,6 @@ MY_HIGHLIGHT_Rec MACRO startrow,startcol
                      cmp   si,bx
                      jnz   square
 ENDM
-
 startpieces MACRO
                 local l
                 Draw  0,96,king,16,16,3
@@ -781,187 +973,8 @@ startpieces MACRO
  
 ENDM
 
-HIGHLIGHT_selected macro flag
-                       local            draw_b
-                       local            draw_w
-                       local            to_team_color
-                       local            team1
-                       local            team2
-                       local            to_piece
-                       local            horse_draw
-                       local            pwan_draw
-                       local            king_draw
-                       local            queen_draw
-                       local            Bishop_draw
-                       local            rook_draw
-                       local            exit
-                       local            draw_highlight
 
 
-                       mov              cl,flag
-                       cmp              cl,0
-                       jne              draw_highlight
-                       mov              al,current_col_grid
-                       dec              al
-                       mov              bl,3
-                       mul              bl
-                       mov              cx,ax
-
-
-                       mov              al,current_row_grid
-                       dec              al
-                       mov              ah,0
-                       mov              bl,24
-                       mul              bl
-                       add              ax,offset grid_row1
-                       mov              di,ax
-                       add              di,cx
-                       mov              al,[di]+2
-                       cmp              al ,'w'
-                       je               draw_w
-                       cmp              al ,'b'
-                       je               draw_b
-                       jmp              exit
-
-
-
-    draw_b:            
-
-                       MYBrownRec       row,column
-
-                       jmp              to_team_color
-    draw_w:            
-
-                       MYWhiteRec       row,column
-                       jmp              to_team_color
-
-    draw_highlight:    
-
-
-                       MY_HIGHLIGHT_Rec current_row,current_col
-                       jmp              to_team_color
-
-
-
-    to_team_color:     
-                       mov              al,current_col_grid
-                       dec              al
-                       mov              bl,3
-                       mul              bl
-                       mov              cx,ax
-
-
-                       mov              al,current_row_grid
-                       dec              al
-                       mov              ah,0
-                       mov              bl,24
-                       mul              bl
-                       add              ax,offset grid_row1
-                       mov              di,ax
-                       add              di,cx
-                       mov              al,[di]+1
-                       cmp              al ,'1'
-                       je               team1
-                       cmp              al,'2'
-                       je               team2
-                       jmp              exit
-
-    team1:             mov              check_color,3h
-                       jmp              to_piece
-    team2:             mov              check_color,0h
-                       jmp              to_piece
-
-    to_piece:          
-                       mov              al,current_col_grid
-                       dec              al
-                       mov              bl,3
-                       mul              bl
-                       mov              bx,ax
-
-                       mov              al,current_col_grid
-                       dec              al
-                       mov              bl,3
-                       mul              bl
-                       mov              cx,ax
-
-
-                       mov              al,current_row_grid
-                       dec              al
-                       mov              ah,0
-                       mov              bl,24
-                       mul              bl
-                       add              ax,offset grid_row1
-                       mov              di,ax
-                       add              di,cx
-                       mov              al,[di]
-                       cmp              al,'h'
-                       je               horse_draw
-                       cmp              al,'q'
-                       je               queen_draw
-                       cmp              al,'p'
-                       je               pwan_draw
-                       cmp              al,'k'
-                       je               king_draw
-                       cmp              al,'b'
-                       je               Bishop_draw
-                       cmp              al,'r'
-                       je               rook_draw
-                       jmp              exit
-
-    horse_draw:        
-                       add              column,6
-                       mov              dl,check_color
-
-                       Draw             row,column,knight,20,20,dl
-                       sub              column,6
-                       jmp              exit
-
-    queen_draw:        
-
-                       add              column,6
-                       mov              dl,check_color
-                       Draw             row,column,queen,13,16,dl
-                       sub              column,6
-                       jmp              exit
-
-
-    pwan_draw:         
-
-                       add              column,6
-                       mov              dl,check_color
-                       Draw             row,column,pawn,16,16,dl
-                       sub              column,6
-                       jmp              exit
-
-    king_draw:         
-
-                       add              column,6
-                       mov              dl,check_color
-                       Draw             row,column,king,16,16,dl
-                       sub              column,6
-                       jmp              exit
-
-
-    Bishop_draw:       
-
-                       add              column,6
-                       mov              dl,check_color
-                       Draw             row,column,Bishop,17,16,dl
-                       sub              column,6
-                       jmp              exit
-
-
-    rook_draw:         
-                       add              column,6
-                       mov              dl,check_color
-                       Draw             row,column,rook,16,16,dl
-                       sub              column,6
-                       jmp              exit
-
-    exit:              
-
-
-endm
 
 
 .model huge
@@ -973,12 +986,10 @@ endm
                        dw 23,0,23,30,23,60 ,23,90,23,120,23,150,23,180,23,210
     team2_pos          dw 138,0,138,30,138,60,138,90,138,120,138,150,138,150,138,210
                        dw 161,0,161,30,161,60,161,90,161,120,161,150,161,180,161,210
-
     current_row        dw 0                                                                                                     ;;;;pixel
     current_col        dw 90                                                                                                    ;;;;pixel
     current_row_grid   db 1
     current_col_grid   db 4
-
     selected_row       dw -1                                                                                                    ;;;;pixel
     selected_col       dw -1                                                                                                    ;;;;pixel
     selected_row_grid  db -1
@@ -1121,905 +1132,1063 @@ endm
     highlight_row7     db 'f', 'f', 'f', 'f', 'f', 'f', 'f','f'
     highlight_row8     db 'f', 'f', 'f', 'f', 'f', 'f', 'f','f'
 
+    operand            db 0
+    rowgrid            db 0
+    colgrid            db 0
+    Currrow            dw 0
+    Currcol            dw 0
 
 
     ;;;;;h->horse  q->queen   p->pawn   k->king   b->Bishop   r->rook   1->green->team1   2->black->team2  00->no_piece w-b--->white-black
     ;;;;rook--horse--Bishop--king---queen--Bishop--horse--rook      8pawn
     ; current_pos dw 00,90
-
+    ; (row*8)+col
 
 .code
-
 move_pawn proc far
              
-                         mov                      al,selected_col_grid
-                         dec                      al
-                         mov                      bl,3
-                         mul                      bl
-                         mov                      cx,ax
-                         mov                      al,selected_row_grid
-                         dec                      al
-                         mov                      ah,0
-                         mov                      bl,24
-                         mul                      bl
-                         add                      ax,offset grid_row1
-                         mov                      di,ax
-                         add                      di,cx
-                         inc                      di
-                         mov                      al,[di]
-                         mov                      ah,0
-                         mov                      team,al
-                         cmp                      al ,'1'
-                         je                       pteam1
-                         cmp                      al ,'2'
-                         je                       pteam2
-                         jmp                      pexit
+                                 mov                      al,selected_col_grid
+                                 dec                      al
+                                 mov                      bl,3
+                                 mul                      bl
+                                 mov                      cx,ax
+                                 mov                      al,selected_row_grid
+                                 dec                      al
+                                 mov                      ah,0
+                                 mov                      bl,24
+                                 mul                      bl
+                                 add                      ax,offset grid_row1
+                                 mov                      di,ax
+                                 add                      di,cx
+                                 inc                      di
+                                 mov                      al,[di]
+                                 mov                      ah,0
+                                 mov                      team,al
+                                 cmp                      al ,'1'
+                                 je                       pteam1
+                                 cmp                      al ,'2'
+                                 je                       pteam2
+                                 jmp far ptr                      pexit
 
-    pteam1:              
-                         mov                      dl,1                         ;;;;;;;;;row
-                         mov                      dh,0                         ;;;;;;;;;column
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bx,23
-                         add                      highlight_row,bx
-                         jmp                      pchange
+    pteam1:                      
+                                 mov                      dl,1                                                 ;;;;;;;;;row
+                                 mov                      dh,0                                                 ;;;;;;;;;column
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bx,23
+                                 add                      highlight_row,bx
+                                 jmp far ptr                      pchange
 
-    pteam2:              
-                         mov                      dl,-1                        ;;;;;;;;;row
-                         mov                      dh,0                         ;;;;;;;;;column
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bx,23
-                         sub                      highlight_row,23
-                         jmp                      pchange
+    pteam2:                      
+                                 mov                      dl,-1                                                ;;;;;;;;;row
+                                 mov                      dh,0                                                 ;;;;;;;;;column
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bx,23
+                                 sub                      highlight_row,23
+                                 jmp far ptr                      pchange
 
-    pchange:             
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         add                      highlight_row_grid,dl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
-                         add                      highlight_col_grid,dh
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                        pexit
-                         call                      set_highlighled_true
-                         jmp                       pexit
-    pexit:               
-                         ret
+    pchange:                     
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 add                      highlight_row_grid,dl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
+                                 add                      highlight_col_grid,dh
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       pexit
+                                 call                     far ptr                     set_highlighled_true
+                                 jmp far ptr                      pexit
+    pexit:                       
+                                 ret
 move_pawn endp
 move_bishop proc   far
-                         mov                      al,selected_col_grid
-                         dec                      al
-                         mov                      bl,3
-                         mul                      bl
-                         mov                      cx,ax
-                         mov                      al,selected_row_grid
-                         dec                      al
-                         mov                      ah,0
-                         mov                      bl,24
-                         mul                      bl
-                         add                      ax,offset grid_row1
-                         mov                      di,ax
-                         add                      di,cx
-                         inc                      di
-                         mov                      al,[di]
-                         mov                      team,al
-                         cmp                      al ,'1'
-                         je                       bteam1
-                         cmp                      al ,'2'
-                         je                       bteam2
-                         jmp                      bexit
+                                 mov                      al,selected_col_grid
+                                 dec                      al
+                                 mov                      bl,3
+                                 mul                      bl
+                                 mov                      cx,ax
+                                 mov                      al,selected_row_grid
+                                 dec                      al
+                                 mov                      ah,0
+                                 mov                      bl,24
+                                 mul                      bl
+                                 add                      ax,offset grid_row1
+                                 mov                      di,ax
+                                 add                      di,cx
+                                 inc                      di
+                                 mov                      al,[di]
+                                 mov                      team,al
+                                 cmp                      al ,'1'
+                                 je                       bteam1
+                                 cmp                      al ,'2'
+                                 je                       bteam2
+                                 jmp far ptr                      bexit
 
-    bteam1:              
-    bteam2:              
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
-    bcompare1:           
-                         add                      highlight_row,23
-                         add                      highlight_col,30
-                         cmp                      highlight_col,240
-                         je                       blevel2
-                         cmp                      highlight_row,184
-                         je                       blevel2
-                         add                      highlight_row_grid,1
-                         add                      highlight_col_grid,1
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       blevel2
-                         call                     set_highlighled_true
-                         jmp                      bcompare1
+    bteam1:                      
+    bteam2:                      
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
+    bcompare1:                   
+                                 add                      highlight_row,23
+                                 add                      highlight_col,30
+                                 cmp                      highlight_col,240
+                                 je                       blevel2
+                                 cmp                      highlight_row,184
+                                 je                       blevel2
+                                 add                      highlight_row_grid,1
+                                 add                      highlight_col_grid,1
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       blevel2
+                                 call                     far ptr                     set_highlighled_true
+                                 jmp far ptr                      bcompare1
 
                 
-    blevel2:             
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
-    bcompare2:           
-                         add                      highlight_row,23
-                         sub                      highlight_col,30
-                         cmp                      highlight_col,-30
-                         je                       blevel3
-                         cmp                      highlight_row,184
-                         je                       blevel3
-                         add                      highlight_row_grid,1
+    blevel2:                     
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
+    bcompare2:                   
+                                 add                      highlight_row,23
+                                 sub                      highlight_col,30
+                                 cmp                      highlight_col,-30
+                                 je                       blevel3
+                                 cmp                      highlight_row,184
+                                 je                       blevel3
+                                 add                      highlight_row_grid,1
                          
-                         sub                      highlight_col_grid,1
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       blevel3
-                         call                     set_highlighled_true
-                         jmp                      bcompare2
+                                 sub                      highlight_col_grid,1
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       blevel3
+                                 call                     far ptr                     set_highlighled_true
+                                 jmp far ptr                      bcompare2
 
 
-    blevel3:             
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
-    bcompare3:           
-                         sub                      highlight_row,23
-                         add                      highlight_col,30
-                         cmp                      highlight_col,240
-                         je                       blevel4
-                         cmp                      highlight_row,-23
-                         je                       blevel4
-                         sub                      highlight_row_grid,1
+    blevel3:                     
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
+    bcompare3:                   
+                                 sub                      highlight_row,23
+                                 add                      highlight_col,30
+                                 cmp                      highlight_col,240
+                                 je                       blevel4
+                                 cmp                      highlight_row,-23
+                                 je                       blevel4
+                                 sub                      highlight_row_grid,1
                          
-                         add                      highlight_col_grid,1
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       blevel4
-                         call                     set_highlighled_true
-                         jmp                      bcompare3
+                                 add                      highlight_col_grid,1
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       blevel4
+                                 call                     far ptr                     set_highlighled_true
+                                 jmp far ptr                      bcompare3
 
-    blevel4:             
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
-    bcompare4:           
-                         sub                      highlight_row,23
-                         sub                      highlight_col,30
-                         cmp                      highlight_col,-30
-                         je                       bexit
-                         cmp                      highlight_row,-23
-                         je                       bexit
-                         sub                      highlight_row_grid,1
+    blevel4:                     
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
+    bcompare4:                   
+                                 sub                      highlight_row,23
+                                 sub                      highlight_col,30
+                                 cmp                      highlight_col,-30
+                                 je                       bexit
+                                 cmp                      highlight_row,-23
+                                 je                       bexit
+                                 sub                      highlight_row_grid,1
                          
-                         sub                      highlight_col_grid,1
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       bexit
-                         call                     set_highlighled_true
-                         jmp                      bcompare4
+                                 sub                      highlight_col_grid,1
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       bexit
+                                 call                     far ptr                     set_highlighled_true
+                                 jmp far ptr                      bcompare4
 
 
 
-    bexit:               
-                         ret
+    bexit:                       
+                                 ret
 move_bishop endp
 move_rook proc  far
 
-                         mov                      al,selected_col_grid
-                         dec                      al
-                         mov                      bl,3
-                         mul                      bl
-                         mov                      cx,ax
-                         mov                      al,selected_row_grid
-                         dec                      al
-                         mov                      ah,0
-                         mov                      bl,24
-                         mul                      bl
-                         add                      ax,offset grid_row1
-                         mov                      di,ax
-                         add                      di,cx
-                         inc                      di
-                         mov                      al,[di]
-                         mov                      team,al
-                         cmp                      al ,'1'
-                         je                       rteam1
-                         cmp                      al ,'2'
-                         je                       rteam2
-                         jmp                      rexit
+                                 mov                      al,selected_col_grid
+                                 dec                      al
+                                 mov                      bl,3
+                                 mul                      bl
+                                 mov                      cx,ax
+                                 mov                      al,selected_row_grid
+                                 dec                      al
+                                 mov                      ah,0
+                                 mov                      bl,24
+                                 mul                      bl
+                                 add                      ax,offset grid_row1
+                                 mov                      di,ax
+                                 add                      di,cx
+                                 inc                      di
+                                 mov                      al,[di]
+                                 mov                      team,al
+                                 cmp                      al ,'1'
+                                 je                       rteam1
+                                 cmp                      al ,'2'
+                                 je                       rteam2
+                                 jmp far ptr                      rexit
 
-    rteam1:              
-    rteam2:              
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
-    rcompare1:           
-                         add                      highlight_row,23
-                         cmp                      highlight_row,184
-                         je                       rlevel2
-                         add                      highlight_row_grid,1
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       rlevel2
-                         call                     set_highlighled_true
-                         jmp                      rcompare1
+    rteam1:                      
+    rteam2:                      
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
+    rcompare1:                   
+                                 add                      highlight_row,23
+                                 cmp                      highlight_row,184
+                                 je                       rlevel2
+                                 add                      highlight_row_grid,1
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       rlevel2
+                                 call                     far ptr                     set_highlighled_true
+                                 jmp far ptr                      rcompare1
                
                 
 
 
                 
-    rlevel2:             
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
-    rcompare2:           
-                         sub                      highlight_row,23
-                         cmp                      highlight_row,-23
-                         je                       rlevel3
-                         sub                      highlight_row_grid,1
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       rlevel3
-                         call                     set_highlighled_true
-                         jmp                      rcompare2
+    rlevel2:                     
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
+    rcompare2:                   
+                                 sub                      highlight_row,23
+                                 cmp                      highlight_row,-23
+                                 je                       rlevel3
+                                 sub                      highlight_row_grid,1
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       rlevel3
+                                 call                     far ptr                     set_highlighled_true
+                                 jmp far ptr                      rcompare2
 
 
-    rlevel3:             
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
-    rcompare3:           
+    rlevel3:                     
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
+    rcompare3:                   
                 
-                         add                      highlight_col,30
-                         cmp                      highlight_col,240
-                         je                       rlevel4
-                         add                      highlight_col_grid,1
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       rlevel4
-                         call                     set_highlighled_true
-                         jmp                      rcompare3
+                                 add                      highlight_col,30
+                                 cmp                      highlight_col,240
+                                 je                       rlevel4
+                                 add                      highlight_col_grid,1
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       rlevel4
+                                 call                     far ptr                     set_highlighled_true
+                                 jmp far ptr                      rcompare3
 
-    rlevel4:             
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
-    rcompare4:           
+    rlevel4:                     
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
+    rcompare4:                   
                
-                         sub                      highlight_col,30
-                         cmp                      highlight_col,-30
-                         je                       rexit
-                         sub                      highlight_col_grid,1
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       rexit
-                         call                     set_highlighled_true
-                         jmp                      rcompare4
+                                 sub                      highlight_col,30
+                                 cmp                      highlight_col,-30
+                                 je                       rexit
+                                 sub                      highlight_col_grid,1
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       rexit
+                                 call                     far ptr                     set_highlighled_true
+                                 jmp far ptr                      rcompare4
 
 
 
-    rexit:               
-                         ret
+    rexit:                       
+                                 ret
 move_rook endp
 move_knight proc  far
-                         mov                      al,selected_col_grid
-                         dec                      al
-                         mov                      bl,3
-                         mul                      bl
-                         mov                      cx,ax
-                         mov                      al,selected_row_grid
-                         dec                      al
-                         mov                      ah,0
-                         mov                      bl,24
-                         mul                      bl
-                         add                      ax,offset grid_row1
-                         mov                      di,ax
-                         add                      di,cx
-                         inc                      di
-                         mov                      al,[di]
-                         mov                      ah,0
-                         mov                      team,al
-                         cmp                      al ,'1'
-                         je                       kteam1
-                         cmp                      al ,'2'
-                         je                       kteam2
-                         jmp                      kexit
+                                 mov                      al,selected_col_grid
+                                 dec                      al
+                                 mov                      bl,3
+                                 mul                      bl
+                                 mov                      cx,ax
+                                 mov                      al,selected_row_grid
+                                 dec                      al
+                                 mov                      ah,0
+                                 mov                      bl,24
+                                 mul                      bl
+                                 add                      ax,offset grid_row1
+                                 mov                      di,ax
+                                 add                      di,cx
+                                 inc                      di
+                                 mov                      al,[di]
+                                 mov                      ah,0
+                                 mov                      team,al
+                                 cmp                      al ,'1'
+                                 je                       kteam1
+                                 cmp                      al ,'2'
+                                 je                       kteam2
+                                 jmp far ptr                      kexit
  
-    kteam1:              
-    kteam2:              
+    kteam1:                      
+    kteam2:                      
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    choise1:             
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
+    choise1:                     
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
        
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  +2c   +1r
-                         add                      highlight_col,60
-                         add                      highlight_row,23
-                         cmp                      highlight_col,210
-                         ja                       choise2
-                         cmp                      highlight_row,161
-                         ja                       choise2
-                         add                      highlight_col_grid,2
-                         add                      highlight_row_grid,1
+                                 add                      highlight_col,60
+                                 add                      highlight_row,23
+                                 cmp                      highlight_col,210
+                                 ja                       choise2
+                                 cmp                      highlight_row,161
+                                 ja                       choise2
+                                 add                      highlight_col_grid,2
+                                 add                      highlight_row_grid,1
                          
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       choise2
-                         call                     set_highlighled_true
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       choise2
+                                 call                     far ptr                     set_highlighled_true
                         
                 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    choise2:             
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
+    choise2:                     
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;+2c -1r
-                         add                      highlight_col,60
-                         sub                      highlight_row,23
-                         cmp                      highlight_col,210
-                         ja                       choise3
-                         cmp                      highlight_row,0
-                         jl                       choise3
-                         add                      highlight_col_grid,2
-                         sub                      highlight_row_grid,1
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       choise3
-                         call                     set_highlighled_true
+                                 add                      highlight_col,60
+                                 sub                      highlight_row,23
+                                 cmp                      highlight_col,210
+                                 ja                       choise3
+                                 cmp                      highlight_row,0
+                                 jl                       choise3
+                                 add                      highlight_col_grid,2
+                                 sub                      highlight_row_grid,1
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       choise3
+                                 call                     far ptr                     set_highlighled_true
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    choise3:             
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
+    choise3:                     
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-2c +1r
-                         sub                      highlight_col,60
-                         add                      highlight_row,23
-                         cmp                      highlight_col,0
-                         jl                       choise4
-                         cmp                      highlight_row,161
-                         ja                       choise4
-                         sub                      highlight_col_grid,2
-                         add                      highlight_row_grid,1
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       choise4
-                         call                     set_highlighled_true
+                                 sub                      highlight_col,60
+                                 add                      highlight_row,23
+                                 cmp                      highlight_col,0
+                                 jl                       choise4
+                                 cmp                      highlight_row,161
+                                 ja                       choise4
+                                 sub                      highlight_col_grid,2
+                                 add                      highlight_row_grid,1
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       choise4
+                                 call                     far ptr                     set_highlighled_true
                
     ;     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    choise4:             
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
+    choise4:                     
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-2c -1r
-                         sub                      highlight_col,60
-                         sub                      highlight_row,23
-                         cmp                      highlight_col,0
-                         jl                       choise5
-                         cmp                      highlight_row,0
-                         jl                       choise5
-                         sub                      highlight_col_grid,2
-                         sub                      highlight_row_grid,1
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       choise5
-                         call                     set_highlighled_true
+                                 sub                      highlight_col,60
+                                 sub                      highlight_row,23
+                                 cmp                      highlight_col,0
+                                 jl                       choise5
+                                 cmp                      highlight_row,0
+                                 jl                       choise5
+                                 sub                      highlight_col_grid,2
+                                 sub                      highlight_row_grid,1
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       choise5
+                                 call                     far ptr                     set_highlighled_true
                
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    choise5:             
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
+    choise5:                     
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;+2r +1c
-                         add                      highlight_col,30
-                         add                      highlight_row,46
-                         cmp                      highlight_col,210
-                         ja                       choise6
-                         cmp                      highlight_row,161
-                         ja                       choise6
-                         add                      highlight_col_grid,1
-                         add                      highlight_row_grid,2
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       choise6
-                         call                     set_highlighled_true
+                                 add                      highlight_col,30
+                                 add                      highlight_row,46
+                                 cmp                      highlight_col,210
+                                 ja                       choise6
+                                 cmp                      highlight_row,161
+                                 ja                       choise6
+                                 add                      highlight_col_grid,1
+                                 add                      highlight_row_grid,2
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       choise6
+                                 call                     far ptr                     set_highlighled_true
                
     ; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    choise6:             
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
+    choise6:                     
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
     ;;;;;;;;;;;;;;;;;;;;;;;;;+2r   -1c
-                         sub                      highlight_col,30
-                         add                      highlight_row,46
-                         cmp                      highlight_col,0
-                         jl                       choise7
-                         cmp                      highlight_row,161
-                         ja                       choise7
-                         sub                      highlight_col_grid,1
-                         add                      highlight_row_grid,2
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       choise7
-                         call                     set_highlighled_true
+                                 sub                      highlight_col,30
+                                 add                      highlight_row,46
+                                 cmp                      highlight_col,0
+                                 jl                       choise7
+                                 cmp                      highlight_row,161
+                                 ja                       choise7
+                                 sub                      highlight_col_grid,1
+                                 add                      highlight_row_grid,2
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       choise7
+                                 call                     far ptr                     set_highlighled_true
                
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    choise7:             
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
+    choise7:                     
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-2r +1c
-                         add                      highlight_col,30
-                         sub                      highlight_row,46
-                         cmp                      highlight_col,210
-                         ja                       choise8
-                         cmp                      highlight_row,0
-                         jl                       choise8
-                         add                      highlight_col_grid,1
-                         sub                      highlight_row_grid,2
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       choise8
-                         call                     set_highlighled_true
+                                 add                      highlight_col,30
+                                 sub                      highlight_row,46
+                                 cmp                      highlight_col,210
+                                 ja                       choise8
+                                 cmp                      highlight_row,0
+                                 jl                       choise8
+                                 add                      highlight_col_grid,1
+                                 sub                      highlight_row_grid,2
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       choise8
+                                 call                     far ptr                     set_highlighled_true
                
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    choise8:             
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
+    choise8:                     
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
     ;;;;;;;;;;;;;;;;;;;;;;;-2r   -1c
-                         sub                      highlight_col,30
-                         sub                      highlight_row,46
-                         cmp                      highlight_col,0
-                         jl                       kexit
-                         cmp                      highlight_row,0
-                         jl                       kexit
-                         sub                      highlight_col_grid,1
-                         sub                      highlight_row_grid,2
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       kexit
-                         call                     set_highlighled_true
+                                 sub                      highlight_col,30
+                                 sub                      highlight_row,46
+                                 cmp                      highlight_col,0
+                                 jl                       kexit
+                                 cmp                      highlight_row,0
+                                 jl                       kexit
+                                 sub                      highlight_col_grid,1
+                                 sub                      highlight_row_grid,2
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       kexit
+                                 call                     far ptr                     set_highlighled_true
     
-    kexit:               ret
+    kexit:                       ret
                         
 move_knight endp
+
+
 loop_until_goto proc far
                     
     ; pusha
-    check:               
-                         mov                      ax,goto_col
-                         cmp                      ax,-1
-                         jne                      exitl
-                         mov                      ah,01H
-                         int                      16h
-                         jz                       check
-                         mov                      ah,00
-                         int                      16h
-                         move_goto_cell_or_select ah
-                         jmp                      check
-    exitl:               
-                         mov                      goto_col,-1
-                         mov                      goto_row,-1
-                         mov                      goto_row_grid,-1
-                         mov                      goto_col_grid,-1
+    check:                       
+                                 mov                      ax,goto_col
+                                 cmp                      ax,-1
+                                 jne                      exitl
+                                 mov                      ah,01H
+                                 int                      16h
+                                 jz                       check
+                                 mov                      ah,00
+                                 int                      16h
+                                 move_goto_cell_or_select ah
+                                 jmp far ptr                      check
+    exitl:                       
+                                 mov                      goto_col,-1
+                                 mov                      goto_row,-1
+                                 mov                      goto_row_grid,-1
+                                 mov                      goto_col_grid,-1
     ; popa
-                         ret
+                                 ret
 loop_until_goto endp
 move_piece proc far
-                         mov                      al,goto_row_grid
-                         dec                      al
-                         mov                      bl,8
-                         mul                      bl
-                         mov                      bl,goto_col_grid
-                         mov                      bh,0
-                         dec                      bl
-                         add                      ax,bx
-                         mov                      di ,offset highlight_row1
-                         add                      di,ax
-                         mov                      cl,[di]
-                         mov                      al,'f'
-                         cmp                      cl,al
-                         je                       exit
+                                 mov                      al,goto_row_grid
+                                 dec                      al
+                                 mov                      bl,8
+                                 mul                      bl
+                                 mov                      bl,goto_col_grid
+                                 mov                      bh,0
+                                 dec                      bl
+                                 add                      ax,bx
+                                 mov                      di ,offset highlight_row1
+                                 add                      di,ax
+                                 mov                      cl,[di]
+                                 mov                      al,'f'
+                                 cmp                      cl,al
+                                 je                       exit
 
-                         mov                      al,selected_col_grid
-                         dec                      al
-                         mov                      bl,3
-                         mul                      bl
-                         mov                      cx,ax
+                                 mov                      al,selected_col_grid
+                                 dec                      al
+                                 mov                      bl,3
+                                 mul                      bl
+                                 mov                      cx,ax
 
 
-                         mov                      al,selected_row_grid
-                         dec                      al
-                         mov                      ah,0
-                         mov                      bl,24
-                         mul                      bl
-                         add                      ax,offset grid_row1
-                         mov                      di,ax
-                         add                      di,cx
+                                 mov                      al,selected_row_grid
+                                 dec                      al
+                                 mov                      ah,0
+                                 mov                      bl,24
+                                 mul                      bl
+                                 add                      ax,offset grid_row1
+                                 mov                      di,ax
+                                 add                      di,cx
 
-                         mov                      cl,[di]                      ;;;;;piece
+                                 mov                      cl,[di]                                              ;;;;;piece
 
-                         mov                      ch,[di]+1                    ;;;team color
-                         push                     cx
-                         mov                      al,'0'
-                         mov                      [di],al
-                         inc                      di
-                         mov                      al,'0'
-                         mov                      [di],al
+                                 mov                      ch,[di]+1                                            ;;;team color
+                                 push                     cx
+                                 mov                      al,'0'
+                                 mov                      [di],al
+                                 inc                      di
+                                 mov                      al,'0'
+                                 mov                      [di],al
              
 
-                         mov                      ax,selected_col
-                         mov                      column,ax
-                         mov                      bx, selected_row
-                         mov                      row,bx
-                         mov                      ax,selected_col
-                         mov                      current_col,ax
-                         mov                      ax,selected_row
-                         mov                      current_row,ax
-                         mov                      al,selected_col_grid
-                         mov                      current_col_grid,al
-                         mov                      al,selected_row_grid
-                         mov                      current_row_grid,al
-                         HIGHLIGHT_selected       0
+                                 mov                      ax,selected_col
+                                 mov                      column,ax
+                                 mov                      bx, selected_row
+                                 mov                      row,bx
+                                 mov                      ax,selected_col
+                                 mov                      current_col,ax
+                                 mov                      ax,selected_row
+                                 mov                      current_row,ax
+                                 mov                      al,selected_col_grid
+                                 mov                      current_col_grid,al
+                                 mov                      al,selected_row_grid
+                                 mov                      current_row_grid,al
+                                 HIGHLIGHT_selected       0
 
-                         mov                      al,goto_col_grid
-                         dec                      al
-                         mov                      bl,3
-                         mul                      bl
-                         mov                      cx,ax
-                         mov                      al,goto_row_grid
-                         dec                      al
-                         mov                      ah,0
-                         mov                      bl,24
-                         mul                      bl
-                         add                      ax,offset grid_row1
-                         mov                      si,ax
-                         add                      si,cx
-                         mov                      al,[si]
-                         pop                      cx
-                         mov                      [si],cl
-                         mov                      [si]+1,ch
-                         mov                      ax,goto_col
-                         mov                      column,ax
-                         mov                      ax, goto_row
-                         mov                      row,ax
-                         mov                      ax,goto_col
-                         mov                      current_col,ax
-                         mov                      ax,goto_row
-                         mov                      current_row,ax
-                         mov                      al,goto_col_grid
-                         mov                      current_col_grid,al
-                         mov                      al,goto_row_grid
-                         mov                      current_row_grid,al
+                                 mov                      al,goto_col_grid
+                                 dec                      al
+                                 mov                      bl,3
+                                 mul                      bl
+                                 mov                      cx,ax
+                                 mov                      al,goto_row_grid
+                                 dec                      al
+                                 mov                      ah,0
+                                 mov                      bl,24
+                                 mul                      bl
+                                 add                      ax,offset grid_row1
+                                 mov                      si,ax
+                                 add                      si,cx
+                                 mov                      al,[si]
+                                 pop                      cx
+                                 mov                      [si],cl
+                                 mov                      [si]+1,ch
+                                 mov                      ax,goto_col
+                                 mov                      column,ax
+                                 mov                      ax, goto_row
+                                 mov                      row,ax
+                                 mov                      ax,goto_col
+                                 mov                      current_col,ax
+                                 mov                      ax,goto_row
+                                 mov                      current_row,ax
+                                 mov                      al,goto_col_grid
+                                 mov                      current_col_grid,al
+                                 mov                      al,goto_row_grid
+                                 mov                      current_row_grid,al
 
-                         mov                      ax,goto_col
-                         mov                      column,ax
-                         mov                      ax, goto_row
-                         mov                      row,ax
-                         HIGHLIGHT_selected       0
+                                 mov                      ax,goto_col
+                                 mov                      column,ax
+                                 mov                      ax, goto_row
+                                 mov                      row,ax
+                                 HIGHLIGHT_selected       0
 
 
-                         mov                      selected_col,-1
-                         mov                      selected_row,-1
-                         mov                      selected_row_grid,-1
-                         mov                      selected_col_grid,-1
+                                 mov                      selected_col,-1
+                                 mov                      selected_row,-1
+                                 mov                      selected_row_grid,-1
+                                 mov                      selected_col_grid,-1
 
-    exit:                
-                         ret
+    exit:                        
+                                 ret
 move_piece endp
-move_king proc far
-                         mov                      al,selected_col_grid
-                         dec                      al
-                         mov                      bl,3
-                         mul                      bl
-                         mov                      cx,ax
-                         mov                      al,selected_row_grid
-                         dec                      al
-                         mov                      ah,0
-                         mov                      bl,24
-                         mul                      bl
-                         add                      ax,offset grid_row1
-                         mov                      di,ax
-                         add                      di,cx
-                         inc                      di
-                         mov                      al,[di]
-                         mov                      ah,0
-                         mov                      team,al
-                         cmp                      al ,'1'
-                         je                       jteam1
-                         cmp                      al ,'2'
-                         je                       jteam2
-                         jmp                      jexit
 
-    jteam1:              
-    jteam2:              
+
+
+move_king proc far
+                                 mov                      al,selected_col_grid
+                                 dec                      al
+                                 mov                      bl,3
+                                 mul                      bl
+                                 mov                      cx,ax
+                                 mov                      al,selected_row_grid
+                                 dec                      al
+                                 mov                      ah,0
+                                 mov                      bl,24
+                                 mul                      bl
+                                 add                      ax,offset grid_row1
+                                 mov                      di,ax
+                                 add                      di,cx
+                                 inc                      di
+                                 mov                      al,[di]
+                                 mov                      ah,0
+                                 mov                      team,al
+                                 cmp                      al ,'1'
+                                 je                       jteam1
+                                 cmp                      al ,'2'
+                                 je                       jteam2
+                                 jmp far ptr                      jexit
+
+    jteam1:                      
+    jteam2:                      
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    m1:                                                                        ;;;;;;;;;;;-1r
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
-    jcompare1:           
-                         sub                      highlight_row,23
-                         cmp                      highlight_row,-23
-                         je                       m2
-                         sub                      highlight_row_grid,1
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       m2
-                         call                     set_highlighled_true
+    m1:                                                                                                        ;;;;;;;;;;;-1r
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
+    jcompare1:                   
+                                 sub                      highlight_row,23
+                                 cmp                      highlight_row,-23
+                                 je                       m2
+                                 sub                      highlight_row_grid,1
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       m2
+                                 call                     far ptr                     set_highlighled_true
                         
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    m2:                                                                        ;;;;;;;;;;;;;-1r  +1c
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
-    jcompare2:           
-                         sub                      highlight_row,23
-                         add                      highlight_col,30
-                         cmp                      highlight_row,-23
-                         je                       m3
-                         cmp                      highlight_col,240
-                         je                       m3
-                         sub                      highlight_row_grid,1
-                         add                      highlight_col_grid,1
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       m3
-                         call                     set_highlighled_true
+    m2:                                                                                                        ;;;;;;;;;;;;;-1r  +1c
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
+    jcompare2:                   
+                                 sub                      highlight_row,23
+                                 add                      highlight_col,30
+                                 cmp                      highlight_row,-23
+                                 je                       m3
+                                 cmp                      highlight_col,240
+                                 je                       m3
+                                 sub                      highlight_row_grid,1
+                                 add                      highlight_col_grid,1
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       m3
+                                 call                     far ptr                     set_highlighled_true
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    m3:                                                                        ;;;;;;;;;;;;;  +1c
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
-    jcompare3:           
-                         add                      highlight_col,30
-                         cmp                      highlight_col,240
-                         je                       m4
-                         add                      highlight_col_grid,1
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       m4
-                         call                     set_highlighled_true
+    m3:                                                                                                        ;;;;;;;;;;;;;  +1c
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
+    jcompare3:                   
+                                 add                      highlight_col,30
+                                 cmp                      highlight_col,240
+                                 je                       m4
+                                 add                      highlight_col_grid,1
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       m4
+                                 call                     far ptr                     set_highlighled_true
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    m4:                                                                        ;;;;;;;;;;;;;+1r  +1c
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
-    jcompare4:           
-                         add                      highlight_row,23
-                         add                      highlight_col,30
-                         cmp                      highlight_row,184
-                         je                       m5
-                         cmp                      highlight_col,240
-                         je                       m5
-                         add                      highlight_row_grid,1
-                         add                      highlight_col_grid,1
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       m5
-                         call                     set_highlighled_true
+    m4:                                                                                                        ;;;;;;;;;;;;;+1r  +1c
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
+    jcompare4:                   
+                                 add                      highlight_row,23
+                                 add                      highlight_col,30
+                                 cmp                      highlight_row,184
+                                 je                       m5
+                                 cmp                      highlight_col,240
+                                 je                       m5
+                                 add                      highlight_row_grid,1
+                                 add                      highlight_col_grid,1
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       m5
+                                 call                     far ptr                     set_highlighled_true
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    m5:                                                                        ;;;;;;;;;;;;;+1r
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
-    jcompare5:           
-                         add                      highlight_row,23
-                         cmp                      highlight_row,184
-                         je                       m6
-                         add                      highlight_row_grid,1
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       m6
-                         call                     set_highlighled_true
+    m5:                                                                                                        ;;;;;;;;;;;;;+1r
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
+    jcompare5:                   
+                                 add                      highlight_row,23
+                                 cmp                      highlight_row,184
+                                 je                       m6
+                                 add                      highlight_row_grid,1
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       m6
+                                 call                     far ptr                     set_highlighled_true
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    m6:                                                                        ;;;;;;;;;;;;;+1r  -1c
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
-    jcompare6:           
-                         add                      highlight_row,23
-                         sub                      highlight_col,30
-                         cmp                      highlight_row,184
-                         je                       m7
-                         cmp                      highlight_col,-30
-                         je                       m7
-                         add                      highlight_row_grid,1
-                         sub                      highlight_col_grid,1
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       m7
-                         call                     set_highlighled_true
+    m6:                                                                                                        ;;;;;;;;;;;;;+1r  -1c
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
+    jcompare6:                   
+                                 add                      highlight_row,23
+                                 sub                      highlight_col,30
+                                 cmp                      highlight_row,184
+                                 je                       m7
+                                 cmp                      highlight_col,-30
+                                 je                       m7
+                                 add                      highlight_row_grid,1
+                                 sub                      highlight_col_grid,1
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       m7
+                                 call                     far ptr                     set_highlighled_true
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    m7:                                                                        ;;;;;;;;;;;;;-1c
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
-    jcompare7:           
-                         sub                      highlight_col,30
-                         cmp                      highlight_col,-30
-                         je                       m8
-                         sub                      highlight_col_grid,1
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       m8
-                         call                     set_highlighled_true
+    m7:                                                                                                        ;;;;;;;;;;;;;-1c
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
+    jcompare7:                   
+                                 sub                      highlight_col,30
+                                 cmp                      highlight_col,-30
+                                 je                       m8
+                                 sub                      highlight_col_grid,1
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       m8
+                                 call                     far ptr                     set_highlighled_true
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    m8:                                                                        ;;;;;;;;;;;;;-1r  -1c
-                         mov                      bx,selected_col
-                         mov                      highlight_col,bx
-                         mov                      cx,selected_row
-                         mov                      highlight_row,cx
-                         mov                      bl, selected_row_grid
-                         mov                      highlight_row_grid,bl
-                         mov                      bh, selected_col_grid
-                         mov                      highlight_col_grid,bh
-    jcompare8:           
-                         sub                      highlight_col,30
-                         sub                      highlight_row,23
-                         cmp                      highlight_col,-30
-                         je                       jexit
-                         cmp                      highlight_row,-23
-                         je                       jexit
-                         sub                      highlight_col_grid,1
-                         sub                      highlight_row_grid,1
-                         highlight_goto
-                         cmp                      highlight_flag,'f'
-                         je                       jexit
-                         call                     set_highlighled_true
+    m8:                                                                                                        ;;;;;;;;;;;;;-1r  -1c
+                                 mov                      bx,selected_col
+                                 mov                      highlight_col,bx
+                                 mov                      cx,selected_row
+                                 mov                      highlight_row,cx
+                                 mov                      bl, selected_row_grid
+                                 mov                      highlight_row_grid,bl
+                                 mov                      bh, selected_col_grid
+                                 mov                      highlight_col_grid,bh
+    jcompare8:                   
+                                 sub                      highlight_col,30
+                                 sub                      highlight_row,23
+                                 cmp                      highlight_col,-30
+                                 je                       jexit
+                                 cmp                      highlight_row,-23
+                                 je                       jexit
+                                 sub                      highlight_col_grid,1
+                                 sub                      highlight_row_grid,1
+                                 highlight_goto
+                                 cmp                      highlight_flag,'f'
+                                 je                       jexit
+                                 call                     far ptr                     set_highlighled_true
 
 
-    jexit:               ret
+    jexit:                       ret
 move_king endp
 
 set_highlighled_true proc far
-                         mov                      bl,highlight_row_grid
-                         dec                      bl
-                         mov                      bh,highlight_col_grid
-                         dec                      bh
-                         mov                      di,offset highlight_row1
-                         mov                      al,bl
-                         mov                      ah,0
-                         mov                      cl,8
-                         mul                      cl
-                         add                      di,ax
-                         mov                      bl,bh
-                         mov                      bh,0
-                         add                      di,bx
-                         mov                      al,'t'
-                         mov                      [di],al
-                         ret
+                                 mov                      bl,highlight_row_grid
+                                 dec                      bl
+                                 mov                      bh,highlight_col_grid
+                                 dec                      bh
+                                 mov                      di,offset highlight_row1
+                                 mov                      al,bl
+                                 mov                      ah,0
+                                 mov                      cl,8
+                                 mul                      cl
+                                 add                      di,ax
+                                 mov                      bl,bh
+                                 mov                      bh,0
+                                 add                      di,bx
+                                 mov                      al,'t'
+                                 mov                      [di],al
+                                 ret
 set_highlighled_true endp
+    ;looping over the grid and dehighlight it
+
+ 
+ 
+ 
+ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;lesa
+    ;description
+Get_Cell_Points PROC far
+                                 mov                      operand,8                                            ;operand is by deafult=8
+                                 mov                      ax,bx
+                                 div                      operand
+                                 inc                      al
+                                 mov                      rowgrid,al
+                                 mov                      colgrid,ah
+
+
+                                 dec                      al
+                                 mov                      operand,23
+                                 mul                      operand
+                                 mov                      Currrow,ax                                           ;Currrow must be a word
+
+
+                                 mov                      al,colgrid
+                                 dec                      al
+                                 mov                      operand,30
+                                 mul                      operand
+                                 mov                      Currcol,ax                                           ;Currcol must be a word
+                                 ret
+Get_Cell_Points ENDP
+    ;it will Draw Original Cell Color while dehighlithing
+DrawOriginalCellColor PROC far
+                                 mov                      al,[si]+2
+                                 cmp                      al ,'w'
+                                 je                       DrawWhite
+                                 cmp                      al ,'b'
+                                 je                       DrawBrown
+                                 jmp far ptr                      MyExit
+    DrawBrown:                   
+                                 MYBrownRec               Currrow,Currcol
+                                 jmp far ptr                      TeamColor
+    DrawWhite:                   
+                                 MYWhiteRec               Currrow,Currcol
+                                 jmp far ptr                      TeamColor
+    TeamColor:                   
+                                 mov                      al,[si]+1
+                                 cmp                      al ,'1'
+                                 je                       Team1
+                                 cmp                      al,'2'
+                                 je                       Team2
+                                 jmp far ptr                      MyExit
+    Team1:                       mov                      check_color,3h
+                                 jmp far ptr                      CheckPiece
+    Team2:                       mov                      check_color,0h
+                                 jmp far ptr                      CheckPiece
+    CheckPiece:                  
+                                 mov                      al,[si]
+                                 cmp                      al,'h'
+                                 je                       HorseDraw
+                                 cmp                      al,'q'
+                                 je                       QueenDraw
+                                 cmp                      al,'p'
+                                 je                       PawnDraw
+                                 cmp                      al,'k'
+                                 je                       KingDraw
+                                 cmp                      al,'b'
+                                 je                       BishopDraw
+                                 cmp                      al,'r'
+                                 je                       RookDraw
+                                 jmp far ptr                      MyExit
+    HorseDraw:                   
+                                 add                      Currcol,6
+                                 mov                      dl,check_color
+                                 Draw                     Currrow,Currcol,knight,20,20,dl
+                                 sub                      Currcol,6
+                                 jmp far ptr                      MyExit
+    QueenDraw:                   
+                                 add                      Currcol,6
+                                 mov                      dl,check_color
+                                 Draw                     Currrow,Currcol,queen,13,16,dl
+                                 sub                      Currcol,6
+                                 jmp far ptr                      MyExit
+    PawnDraw:                    
+                                 add                      Currcol,6
+                                 mov                      dl,check_color
+                                 Draw                     Currrow,Currcol,pawn,16,16,dl
+                                 sub                      Currcol,6
+                                 jmp far ptr                      MyExit
+    KingDraw:                    
+                                 add                      Currcol,6
+                                 mov                      dl,check_color
+                                 Draw                     Currrow,Currcol,king,16,16,dl
+                                 sub                      Currcol,6
+                                 jmp far ptr                      MyExit
+    BishopDraw:                  
+                                 add                      Currcol,6
+                                 mov                      dl,check_color
+                                 Draw                     Currrow,Currcol,Bishop,17,16,dl
+                                 sub                      Currcol,6
+                                 jmp far ptr                      MyExit
+    RookDraw:                    
+                                 add                      Currcol,6
+                                 mov                      dl,check_color
+                                 Draw                     Currrow,Currcol,rook,16,16,dl
+                                 sub                      Currcol,6
+                                 jmp far ptr                      MyExit
+    MyExit:                      
+                                 ret
+DrawOriginalCellColor ENDP
+Dehighlight_Grid PROC far
+                                 mov                      bx,1
+                                 lea                      di,highlight_row1
+    Dehighlight_Grid_loop:                                                                                     ;change the label name
+                                 cmp                      [di],'f'
+    ;not highlited Do Nothing
+                                 je                       Dehighlight_Grid_exit
+    Dehighlight_Grid_dehighlight:
+                                 call                     far ptr                     Get_Cell_Points
+                                 dec                      rowgrid
+                                 dec                      colgrid
+
+                                 mov                      ax,0
+                                 mov                      operand,24
+                                 mov                      al,rowgrid
+                                 mul                      operand
+                                 mov                      rowgrid,al
+
+                                 mov                      ax,0
+                                 mov                      operand,3
+                                 mov                      al,colgrid
+                                 mul                      operand
+                                 mov                      colgrid,al                                           ;Sure OV will not happen
+                         
+                                 lea                      si,grid_row1
+                                 mov                      dl,colgrid
+                                 add                      dl,rowgrid
+                                 mov                      dh,0
+                                 add                      si,dx
+                                 call                     far ptr                     DrawOriginalCellColor
+                                 mov                      al,'f'
+                                 mov                      [di],al
+    Dehighlight_Grid_exit:                                                                                     ;change lable name (Yousef)
+                                 inc                      bx
+                                 inc                      di
+                                 cmp                      bx,64
+                                 jnz                      Dehighlight_Grid_loop
+                                 ret
+Dehighlight_Grid ENDP
+
+
+
 
 
 main proc far
-                         mov                      ax,@data
-                         mov                      ds,ax
-                         ChgVideoMode
-                         mov                      ax,0A000H
-                         mov                      es,ax
-                         DrawGrid
-                         startpieces
-                         MY_HIGHLIGHT_Rec         00,0090
-                         Draw                     0,96,king,16,16,3
-                         mov_until_select
-                         mov                      ah,4ch
-                         int                      21h
-
+                                 mov                      ax,@data
+                                 mov                      ds,ax
+                                 ChgVideoMode
+                                 mov                      ax,0A000H
+                                 mov                      es,ax
+                                 DrawGrid
+                                 startpieces
+                                 MY_HIGHLIGHT_Rec         00,0090
+                                 Draw                     0,96,king,16,16,3
+                                 mov_until_select
+                                 mov                      ah,4ch
+                                 int                      21h
 main endp
 end main
 

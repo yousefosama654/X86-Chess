@@ -200,9 +200,8 @@
    highlight_row8     db 'f', 'f', 'f', 'f', 'f', 'f', 'f','f'
 
 
-    
 
-   
+
    operand            db 0
    rowgrid            db 0
    colgrid            db 0
@@ -228,27 +227,21 @@
     msg_checkmate1 db "checkmate team1         ",'$'
     msg_checkmate2 db "checkmate team2         ",'$'
 
-
-    time1     dd 0, 0, 0, 0, 0, 0, 0,0
-    time2       dd 0, 0, 0, 0, 0, 0, 0,0
-    time3      dd 0, 0, 0, 0, 0, 0, 0,0
+       time1     dd 0, 0, 0, 0, 0, 0, 0,0
+  time2       dd 0, 0, 0, 0, 0, 0, 0,0
+   time3      dd 0, 0, 0, 0, 0, 0, 0,0
    time4      dd 0, 0, 0, 0, 0, 0, 0,0
    time5      dd 0, 0, 0, 0, 0, 0, 0,0
    time6      dd 0, 0, 0, 0, 0, 0, 0,0
    time7      dd 0, 0, 0, 0, 0, 0, 0,0
    time8      dd 0, 0, 0, 0, 0, 0, 0,0
-
-
-prev  db   0
-timeflag db 't'
-sec db 0
-min db 0
-hrs  db  0
-
-;;;;;h->horse  q->queen   p->pawn   k->king   b->Bishop   r->rook   1->green->team1   2->black->team2  00->no_piece w-b--->white-black
+   
+prev   db   0
+   ;;;;;h->horse  q->queen   p->pawn   k->king   b->Bishop   r->rook   1->green->team1   2->black->team2  00->no_piece w-b--->white-black
    ;;;;rook--horse--Bishop--king---queen--Bishop--horse--rook      8pawn
    ; current_pos dw 00,90
    ; (row*8)+col
+
 .code
 
 
@@ -675,14 +668,8 @@ startpieces proc far
                                      call                 far ptr Draw
                                      ret
 startpieces endp
-
-
 move_pawn proc far
-                                    call far ptr calctime
-                                    cmp timeflag,'f'
-                                    jne highhigh
-                                    jmp far ptr move_pawn_exitnomove
-                                    highhigh:
+             
                                      mov                  al,selected_col_grid
                                      dec                  al
                                      mov                  bl,3
@@ -949,23 +936,10 @@ move_pawn proc far
                                     call                 far ptr                     set_highlighled_true
                                     jmp                  far ptr                  move_pawn_exit
                                   
-   move_pawn_exitnomove:             
-
-
-   mov selected_col,-1
-   mov selected_col_grid,-1
-   mov selected_row,-1
-   mov selected_row_grid,-1   
-
-   move_pawn_exit:
+   move_pawn_exit:                   
                                      ret
 move_pawn endp
 move_bishop proc far
-                                    call far ptr calctime
-                                    cmp timeflag,'f'
-                                    jne highhigh2
-                                    jmp far ptr move_bishop_exitnomove
-                                    highhigh2:
                                      mov                  al,selected_col_grid
                                      dec                  al
                                      mov                  bl,3
@@ -1098,23 +1072,12 @@ move_bishop proc far
                                      je                   move_bishop_exit
                                      jmp                  far ptr                  move_bishop_compare4
 
-     move_bishop_exitnomove:             
 
-
-   mov selected_col,-1
-   mov selected_col_grid,-1
-   mov selected_row,-1
-   mov selected_row_grid,-1  
 
    move_bishop_exit:                 
                                      ret
 move_bishop endp
-move_king proc far                  
-                                    call far ptr calctime
-                                    cmp timeflag,'f'
-                                    jne highhigh3
-                                    jmp far ptr move_king_exitnomove
-                                    highhigh3:
+move_king proc far
                                      mov                  al,selected_col_grid
                                      dec                  al
                                      mov                  bl,3
@@ -1311,22 +1274,10 @@ move_king proc far
                                      call                 far ptr          set_highlighled_true
 
 
-    move_king_exitnomove:
-    mov selected_col,-1
-   mov selected_col_grid,-1
-   mov selected_row,-1
-   mov selected_row_grid,-1 
-
-
    jexit:                            ret
 move_king endp
 move_rook proc  far
-                                    
-                                    call far ptr calctime
-                                    cmp timeflag,'f'
-                                    jne highhigh4
-                                    jmp far ptr move_rook_exitnomove
-                                    highhigh4:
+
                                      mov                  al,selected_col_grid
                                      dec                  al
                                      mov                  bl,3
@@ -1445,20 +1396,12 @@ move_rook proc  far
                                      je                   rexit
                                      jmp                  far ptr                  rcompare4
 
-    move_rook_exitnomove:
-    mov selected_col,-1
-   mov selected_col_grid,-1
-   mov selected_row,-1
-   mov selected_row_grid,-1 
+
+
    rexit:                            
                                      ret
 move_rook endp
-move_knight proc  far 
-                                    call far ptr calctime
-                                    cmp timeflag,'f'
-                                    jne highhigh5
-                                    jmp far ptr move_knight_exitnomove
-                                    highhigh5:
+move_knight proc  far
                                      mov                  al,selected_col_grid
                                      dec                  al
                                      mov                  bl,3
@@ -1678,26 +1621,12 @@ move_knight proc  far
                                      je                   kexit
                                      call                 far ptr                     set_highlighled_true
     
-    move_knight_exitnomove:
-mov selected_col,-1
-   mov selected_col_grid,-1
-   mov selected_row,-1
-   mov selected_row_grid,-1 
-
-   kexit:          
-                     ret
+   kexit:                            ret
                         
 move_knight endp
-
-
-
 movepawnTeam2 proc far
-                                    call far ptr calctimeTeam2
-                                    cmp timeflag,'f'
-                                    jne highhigh66
-                                    jmp far ptr t2move_pawn_exitnomove
-                                    highhigh66:
-                                    mov                  al,selected_col_gridTeam2
+            
+                                     mov                  al,selected_col_gridTeam2
                                      dec                  al
                                      mov                  bl,3
                                      mul                  bl
@@ -1837,27 +1766,12 @@ movepawnTeam2 proc far
                                     call                 far ptr Team2highlightgoto
                                     call                 far ptr                     Team2_set_highlighled_true
                                     jmp                  far ptr                 movepawnTeam2_move_pawn_exit
-
-
-
-   t2move_pawn_exitnomove:             
-
-
-   mov selected_colTeam2,-1
-   mov selected_col_gridTeam2,-1
-   mov selected_rowTeam2,-1
-   mov selected_row_gridTeam2,-1  
+                                  
    movepawnTeam2_move_pawn_exit:                   
                                      ret
-   
-  
+
 movepawnTeam2 endp
 move_bishopTeam2 proc far
-  call far ptr calctimeTeam2
-                                    cmp timeflag,'f'
-                                    jne highhigh77
-                                    jmp far ptr t2move_bishop_exitnomove
-                                    highhigh77:
                                      mov                  al,selected_col_gridTeam2
                                      dec                  al
                                      mov                  bl,3
@@ -1983,23 +1897,12 @@ move_bishopTeam2 proc far
                                      je                   bishopexit
                                      jmp                  far ptr                  mybishop7
 
-                                     jmp  bishopexit
- t2move_bishop_exitnomove:             
 
 
-   mov selected_colTeam2,-1
-   mov selected_col_gridTeam2,-1
-   mov selected_rowTeam2,-1
-   mov selected_row_gridTeam2,-1    
    bishopexit:                 
                                      ret
 move_bishopTeam2 endp
 movekingTeam2 proc far
-                                    call far ptr calctimeTeam2
-                                    cmp timeflag,'f'
-                                    jne highhigh88
-                                    jmp far ptr t2move_king_exitnomove
-                                    highhigh88:
                                      mov                  al,selected_col_gridTeam2
                                      dec                  al
                                      mov                  bl,3
@@ -2194,23 +2097,12 @@ movekingTeam2 proc far
                                      cmp                  highlight_flag,'f'
                                      je                   wjexit
                                      call                 far ptr          Team2_set_highlighled_true
-                                     jmp                  wjexit
-t2move_king_exitnomove:             
 
-
-   mov selected_colTeam2,-1
-   mov selected_col_gridTeam2,-1
-   mov selected_rowTeam2,-1
-   mov selected_row_gridTeam2,-1   
 
    wjexit:                            ret
 movekingTeam2 endp
 moverookTeam2 proc  far
-call far ptr calctimeTeam2
-                                    cmp timeflag,'f'
-                                    jne highhigh99
-                                    jmp far ptr t2move_rook_exitnomove
-                                    highhigh99:
+
                                      mov                  al,selected_col_gridTeam2
                                      dec                  al
                                      mov                  bl,3
@@ -2328,25 +2220,13 @@ call far ptr calctimeTeam2
                                      cmp                  highlight_flag,'0'
                                      je                   erexit
                                      jmp                  far ptr                  ercompare4
-                                     jmp erexit
-
-t2move_rook_exitnomove:             
 
 
-   mov selected_colTeam2,-1
-   mov selected_col_gridTeam2,-1
-   mov selected_rowTeam2,-1
-   mov selected_row_gridTeam2,-1  
 
    erexit:                            
                                      ret
 moverookTeam2 endp
 moveknightteam2 proc  far
-                                    call far ptr calctimeTeam2
-                                    cmp timeflag,'f'
-                                    jne highhigh111
-                                    jmp far ptr t2move_knight_exitnomove
-                                    highhigh111:
                                      mov                  al,selected_col_gridTeam2
                                      dec                  al
                                      mov                  bl,3
@@ -2565,20 +2445,10 @@ moveknightteam2 proc  far
                                      cmp                  highlight_flag,'f'
                                      je                   kexit121
                                      call                 far ptr                     Team2_set_highlighled_true
-                                     jmp                   kexit121
-    t2move_knight_exitnomove:             
-
-
-   mov selected_colTeam2,-1
-   mov selected_col_gridTeam2,-1
-   mov selected_rowTeam2,-1
-   mov selected_row_gridTeam2,-1  
+    
    kexit121:                            ret
                         
 moveknightteam2 endp
-
-
-
 Team2highlightgoto proc far
                   
                                      mov                  highlight_flag,'t'
@@ -3096,7 +2966,7 @@ mov_until_select proc far
                                      ret
 mov_until_select endp
 move_piece proc far
-
+                    
                                      mov                  al,goto_row_grid
                                      dec                  al
                                      mov                  bl,8
@@ -3205,42 +3075,6 @@ move_piece_breakpoint18:
                                      mov                  row,ax
                                      mov                  al,0
                                      call                 far ptr HIGHLIGHT_selected
-                                      mov ah,2CH
-                                      INT 21h  
-                                    
-                                    mov hrs,ch
-                                    mov min,cl
-                                    mov sec,dh
-                                    mov ebx ,3600
-                                    mov eax,0
-                                    mov al,hrs
-                                    mul ebx
-                                    mov ecx,eax
-                                   mov ebx ,60
-                                    mov eax,0
-                                    mov al,min
-                                    mul ebx
-                                    add ecx,eax
-                                    mov edx,0
-                                   mov dl,sec
-                                  add ecx,edx
-                                  mov edx,ecx
-
-                                  
-                                     mov                  al,goto_col_grid
-                                     dec                  al
-                                     mov                  bl,4
-                                     mul                  bl
-                                     mov                  cx,ax
-                                     mov                  al,goto_row_grid
-                                     dec                  al
-                                     mov                  ah,0
-                                     mov                  bl,32
-                                     mul                  bl
-                                     add                  ax,offset time1
-                                     mov                  si,ax
-                                     add                  si,cx
-                                     mov                 [si],edx
                                      ;;;;
                                      ;;;;
 
@@ -3823,7 +3657,6 @@ HIGHLIGHTSelectedTeam2 proc far
                                      ret
 
 HIGHLIGHTSelectedTeam2 endp
-
 move_current_cell_or_select proc far
                                    
                                      cmp                  clicked,30                                                 ;;;left -->>A
@@ -4758,44 +4591,6 @@ breakpoint18:
                                      mov                  al,0
                                      call                 far ptr HIGHLIGHTSelectedTeam2
 
-
-                                     mov ah,2CH
-                                      INT 21h  
-                                    
-                                    mov hrs,ch
-                                    mov min,cl
-                                    mov sec,dh
-                                    mov ebx ,3600
-                                    mov eax,0
-                                    mov al,hrs
-                                    mul ebx
-                                    mov ecx,eax
-                                   mov ebx ,60
-                                    mov eax,0
-                                    mov al,min
-                                    mul ebx
-                                    add ecx,eax
-                                    mov edx,0
-                                   mov dl,sec
-                                  add ecx,edx
-                                  mov edx,ecx
-
-                                  
-                                     mov                  al,goto_col_gridTeam2
-                                     dec                  al
-                                     mov                  bl,4
-                                     mul                  bl
-                                     mov                  cx,ax
-                                     mov                  al,goto_row_gridTeam2
-                                     dec                  al
-                                     mov                  ah,0
-                                     mov                  bl,32
-                                     mul                  bl
-                                     add                  ax,offset time1
-                                     mov                  si,ax
-                                     add                  si,cx
-                                     mov                 [si],edx
-
   exit12:    
                                      mov                  selected_colTeam2,-1
                                      mov                  selected_rowTeam2,-1
@@ -4981,107 +4776,6 @@ eexxiitt1:
 
 ret
 print_removed_team2 endp
-
-
-calctime proc far
-                               mov timeflag,"t"
-                                mov ah,2CH
-                                     INT 21h  
-                              
-                                    mov hrs,ch
-                                    mov min,cl
-                                    mov sec,dh
-                                    mov ebx ,3600
-                                    mov eax,0
-                                    mov al,hrs
-                                    mul ebx
-                                    mov ecx,eax
-                                   mov ebx ,60
-                                    mov eax,0
-                                    mov al,min
-                                    mul ebx
-                                    add ecx,eax
-                                    mov edx,0
-                                   mov dl,sec
-                                  add ecx,edx
-                                  mov edx,ecx
-                                     mov                  al,selected_col_grid
-                                     dec                  al
-                                     mov                  bl,4
-                                     mul                  bl
-                                     mov                  cx,ax
-                                     mov                  al,selected_row_grid
-                                     dec                  al
-                                     mov                  ah,0
-                                     mov                  bl,32
-                                     mul                  bl
-                                     add                  ax,offset time1
-                                     add ax,cx
-                                     mov si,ax
-                                      mov                  ebx,[si]
-                                     sub edx,ebx
-                                     cmp edx ,3
-                                     jae  move_piece_exit111111
-
-
-  mov timeflag,"f"
-                                        
-                                       move_piece_exit111111:
-                                     
-
-
-ret
-calctime endp
-
-calctimeTeam2 proc far
-                               mov timeflag,"t"
-                                mov ah,2CH
-                                     INT 21h  
-                              
-                                    mov hrs,ch
-                                    mov min,cl
-                                    mov sec,dh
-                                    mov ebx ,3600
-                                    mov eax,0
-                                    mov al,hrs
-                                    mul ebx
-                                    mov ecx,eax
-                                   mov ebx ,60
-                                    mov eax,0
-                                    mov al,min
-                                    mul ebx
-                                    add ecx,eax
-                                    mov edx,0
-                                   mov dl,sec
-                                  add ecx,edx
-                                  mov edx,ecx
-                                     mov                  al,selected_col_gridTeam2
-                                     dec                  al
-                                     mov                  bl,4
-                                     mul                  bl
-                                     mov                  cx,ax
-                                     mov                  al,selected_row_gridTeam2
-                                     dec                  al
-                                     mov                  ah,0
-                                     mov                  bl,32
-                                     mul                  bl
-                                     add                  ax,offset time1
-                                     add ax,cx
-                                     mov si,ax
-                                      mov                  ebx,[si]
-                                     sub edx,ebx
-                                     cmp edx ,3
-                                     jae  move_piece_exit22222
-
-
-  mov timeflag,"f"
-                                        
-                                       move_piece_exit22222:
-                                     
-
-
-ret
-calctimeTeam2 endp
 
 
 game_time proc far

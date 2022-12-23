@@ -1,2 +1,9 @@
-Fatal: Unable to open file 'd:\welcome.obj'
+
+ Start  Stop   Length Name               Class
+
+ 00000H 000D9H 000DAH WELCOME_TEXT       CODE
+ 000E0H 001A5H 000C6H _DATA              DATA
+ 001B0H 001EFH 00040H STACK              STACK
+
+Program entry point at 0000:0000
 

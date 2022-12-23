@@ -1,4 +1,5 @@
-include "CommonMacros.inc"
+include macros.inc
+.286
 ClearScreen MACRO
                 mov ax,0003h
                 int 10h
@@ -137,11 +138,11 @@ main PROC FAR
     F1Key:     
                ClearScreen
                PrintMsg          mf1
-               jmp               rest
+               jmp far ptr               rest
     F2Key:     
                ClearScreen
                PrintMsg          mf2
-               jmp               rest
+               jmp far ptr               rest
     ESCKey:    
                ClearScreen
                PrintMsg          mesc
