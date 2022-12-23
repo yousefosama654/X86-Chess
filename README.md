@@ -1,1 +1,31 @@
 # X86-Chess
+<h1 align='center'>Real Time Chess</h1>
+<div align='center'>
+   <img  src="/Images/logo.png"  >
+ </div>
+ <h2 align='center'> 🕮 Introduction & Background 🕮 </h2>
+<p align='justify'>
+his section presents an overview of the project requirements and constraints. Specific details are
+discussed later. It is required to connect 2 PCs through a Simple network, using serial communication.
+Two functions are to be implemented: chatting, and a two-player real-time chess game.
+  </p>
+<h2 align='center'>💻 Technologies used 💻 </h2>
+<div align='center'>
+    <p> It's a microprocessors course project, so...</p>
+   <img  src="/Images/image.jpg" title="All rights resrved. " >
+ </div>
+ 
+ <h2 align='center'>☑️ Structure & How to Run ☑️ </h2>
+<div align='center'>
+ </div>
+   <p> <h4> Inside Modular Code you should find: </h4>
+   🔵 <b>macros.inc</b> which has all the Macros that we've used (X86-Macro Library).
+  <br> 🟡 <b>Graphics.inc</b> which includes all the graphics (assets) used in the game.
+  <br> 🔴 <b>Grid.asm</b> which is the game itself, it uses all two other files.
+  <br>
+  If you're using DOSBOX through VSCODE then simply copy the content of this folder to the extensions workspace (as in the .txt) and that should then run by default, otherwise   you might just use the normal incantation of masm-ing each file then linking all. Regardless, you need a virtual port simulator for this (to simulate playing/chatting on two different computers)
+  <br> <h4> <b> That's why, alternatively </b> You can simply just run Grid.asm: (Both players on the same computer): <br> </h4>
+  ♠️ Open the emulator and type <b>tasm Grid.asm</b><br>
+  ♣️ Then type <b>link Grid.obj</b><br>
+  ♥️ Now type <b>Grid</b>
+</p> 
