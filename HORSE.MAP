@@ -1,9 +1,0 @@
-
- Start  Stop   Length Name               Class
-
- 00000H 000C8H 000C9H HORSE_TEXT         CODE
- 000D0H 00361H 00292H _DATA              DATA
- 00370H 003AFH 00040H STACK              STACK
-
-Program entry point at 0000:0019
-
