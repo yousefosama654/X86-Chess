@@ -1,7 +1,9 @@
 .model small
 .386
 .stack 64
+include macros.inc
 .data
+include graphics.inc
    row                dw ?
    column             dw ?
    team1_pos          dw 0,0 ,0,30,00,60,00,90,0,120,0,150,0,180,0,210
@@ -61,9 +63,7 @@
 
    cell               dw ?
    check_color        db 3
-
    RowVar             dw 0
-   ; PieceHeight        dw 0
    color              db 0
 
    highlight_flag     db 't'                                                                                                  ;;;;;t--->highlight   f->stop there is piece feom your team
@@ -78,108 +78,7 @@
          
    clicked            db 0
    game_over_flag_team db -1
-   ; RowVar             dw 0
-   ; PieceHeight dw 0
-   ; color       dw       0
-   pawn               db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
 
-   Bishop             db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 03h, 03h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 03h, 03h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 03h, 03h, 03h, 03h, 03h, 03h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 03h, 03h, 03h, 03h, 03h, 03h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 03h, 03h, 03h, 03h, 03h, 03h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 03h, 03h, 03h, 03h, 03h, 03h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 03h, 03h, 03h, 03h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 00h, 00h, 00h
-                      db 00h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 03h, 00h
-                      db 00h, 03h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 03h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-   knight             db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 01h, 01h, 00h, 00h, 01h, 01h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h
-   queen              db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 08h, 00h, 08h, 08h, 00h, 08h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 08h, 00h, 00h, 08h, 00h, 00h, 00h, 00h, 08h, 00h, 00h, 08h, 00h, 00h
-                      db 00h, 00h, 08h, 00h, 00h, 08h, 00h, 08h, 08h, 00h, 08h, 00h, 00h, 08h, 00h, 00h
-                      db 00h, 00h, 00h, 08h, 00h, 08h, 00h, 08h, 08h, 00h, 08h, 00h, 08h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 08h, 00h, 08h, 08h, 08h, 08h, 08h, 08h, 00h, 08h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 08h, 08h, 08h, 08h, 08h, 08h, 08h, 08h, 08h, 08h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 08h, 08h, 08h, 08h, 08h, 08h, 08h, 08h, 08h, 08h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 08h, 08h, 08h, 08h, 08h, 08h, 08h, 08h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 08h, 08h, 08h, 08h, 08h, 08h, 08h, 08h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 08h, 08h, 08h, 08h, 08h, 08h, 08h, 08h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 08h, 08h, 08h, 08h, 08h, 08h, 08h, 08h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-   rook               db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 01h, 01h, 00h, 00h, 01h, 01h, 00h, 00h, 01h, 01h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 01h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-                      db 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h, 00h
-   king               db 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h
-                      db 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h
-                      db 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h
-                      db 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h
-                      db 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h
-                      db 02h, 02h, 02h, 02h, 02h, 02h, 02h, 01h, 01h, 02h, 02h, 02h, 02h, 02h, 02h, 02h
-                      db 02h, 02h, 02h, 02h, 02h, 02h, 01h, 01h, 01h, 01h, 02h, 02h, 02h, 02h, 02h, 02h
-                      db 02h, 02h, 02h, 02h, 01h, 01h, 01h, 02h, 02h, 01h, 01h, 01h, 02h, 02h, 02h, 02h
-                      db 02h, 02h, 02h, 02h, 01h, 01h, 01h, 02h, 02h, 01h, 01h, 01h, 02h, 02h, 02h, 02h
-                      db 02h, 02h, 02h, 02h, 02h, 01h, 01h, 01h, 01h, 01h, 01h, 02h, 02h, 02h, 02h, 02h
-                      db 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h
-                      db 02h, 02h, 02h, 02h, 02h, 01h, 01h, 01h, 01h, 01h, 01h, 02h, 02h, 02h, 02h, 02h
-                      db 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h
-                      db 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h
-                      db 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h
-                      db 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h, 02h
    grid_row1          db 'r1w', 'h1b', 'b1w', 'k1b', 'q1w', 'b1b', 'h1w','r1b'
    grid_row2          db 'p1b', 'p1w', 'p1b', 'p1w', 'p1b', 'p1w', 'p1b', 'p1w'
    grid_row3          db '00w', '00b', '00w', '00b', '00w', '00b', '00w', '00b'
@@ -210,23 +109,24 @@
    Currcol            dw 0
    cell_number        db 0
    cell_add           dw 0
+   
    msg1        db     "Game over team2 won     ",'$'
-    msg2        db    "Game over team1 won     ",'$'
-          msgking1 db "king of team1 has died  ",'$'
-         msgqueen1 db "queen of team1 has died ",'$'
-        msgbishop1 db "bishop of team1 has died",'$'
-          msgpawn1 db "pawn of team1 has died  ",'$'
-        msgknight1 db "knight of team1 has died",'$'
-          msgrook1 db "rook of team1 has died  ",'$'
+   msg2        db    "Game over team1 won     ",'$'
+   msgking1 db "king of team1 has died  ",'$'
+   msgqueen1 db "queen of team1 has died ",'$'
+   msgbishop1 db "bishop of team1 has died",'$'
+   msgpawn1 db "pawn of team1 has died  ",'$'
+   msgknight1 db "knight of team1 has died",'$'
+   msgrook1 db "rook of team1 has died  ",'$'
 
- msgking2 db "king of team2 has died  ",'$'
-         msgqueen2 db "queen of team2 has died ",'$'
-        msgbishop2 db "bishop of team2 has died",'$'
-          msgpawn2 db "pawn of team2 has died  ",'$'
-        msgknight2 db "knight of team2 has died",'$'
-          msgrook2 db "rook of team2 has died  ",'$'
-    msg_checkmate1 db "checkmate team1         ",'$'
-    msg_checkmate2 db "checkmate team2         ",'$'
+   msgking2 db "king of team2 has died  ",'$'
+   msgqueen2 db "queen of team2 has died ",'$'
+   msgbishop2 db "bishop of team2 has died",'$'
+   msgpawn2 db "pawn of team2 has died  ",'$'
+   msgknight2 db "knight of team2 has died",'$'
+   msgrook2 db "rook of team2 has died  ",'$'
+   msg_checkmate1 db "checkmate team1         ",'$'
+   msg_checkmate2 db "checkmate team2         ",'$'
 
 
     time1     dd 0, 0, 0, 0, 0, 0, 0,0
@@ -245,18 +145,22 @@ sec db 0
 min db 0
 hrs  db  0
 
+
+; data of  game menu
+    welcome db "Please enter your name :",'$'
+    menter  db "Plaese press enter to continue ",'$'
+    name1   db 30 ,?, 30 dup('$')
+    mf1     db "To start chatting press F1 ",10,13,'$'
+    mf2     db "To start Game press F2 ",10,13,'$'
+    mesc    db "To end the program press ESC",10,13,'$'
+    endProgram db "---------------------------------Game is Over-----------------------------------",10,13,'$'
+
 ;;;;;h->horse  q->queen   p->pawn   k->king   b->Bishop   r->rook   1->green->team1   2->black->team2  00->no_piece w-b--->white-black
    ;;;;rook--horse--Bishop--king---queen--Bishop--horse--rook      8pawn
    ; current_pos dw 00,90
    ; (row*8)+col
 .code
-
-
-ChgVideoMode MACRO
-                                     mov                  ah,0
-                                     mov                  al,13h
-                                     int                  10h
-ENDM
+;responsible for drawing a white rec in a grid
 MYWhiteRec MACRO startrow,startcol
                                      local                square
                                      local                right
@@ -282,6 +186,7 @@ MYWhiteRec MACRO startrow,startcol
                                      cmp                  si,bx
                                      jnz                  square
 ENDM
+;responsible for drawing a brown rec in a grid
 MYBrownRec MACRO startrow,startcol
                                      local                square
                                      local                right
@@ -357,6 +262,7 @@ MY_HIGHLIGHT_Rec_level2 MACRO startrow,startcol
                                      cmp                  si,bx
                                      jnz                  square
 ENDM
+; responsible for highlight a cell in red for team1
 MY_red_HIGHLIGHT_Rec MACRO startrow,startcol
                                     local                square
                                      local                right
@@ -384,6 +290,7 @@ MY_red_HIGHLIGHT_Rec MACRO startrow,startcol
 
                                     
 endm
+; responsible for highlight a cell in purple for team2
 MY_purple_HIGHLIGHT_Rec MACRO startrow,startcol
                                      local                square
                                      local                right
@@ -412,6 +319,9 @@ endm
 
 
 
+
+
+; responsible for drawing the full Grid
 DrawGrid proc far
             
                                      mov                  di,0
@@ -444,6 +354,7 @@ DrawGrid proc far
                                      jnz                  DrawGrid_col1
                                      ret
 DrawGrid endp
+; responsible for drawing a single piece in the Grid
 Draw proc far
                                      mov                  ax,0A000H
                                      mov                  es,ax
@@ -454,8 +365,6 @@ Draw proc far
                                      add                  ax,startCol
                                      mov                  di,ax
                                      mov                  cx,pieceWidth
-   ;  mov   PieceHeight,height
-   ;  mov   color,c
    Draw_drawPiece:                   
                                      call                 far ptr   DrawRow
                                      add                  di,320
@@ -463,6 +372,7 @@ Draw proc far
                                      jnz                  Draw_drawPiece
                                      ret
 Draw ENDP
+; responsible for drawing a row in the drid
 DrawRow proc far
                                      push                 di
                                      push                 cx
@@ -484,8 +394,8 @@ DrawRow proc far
                                      pop                  di
                                      ret
 DrawRow endp
+; responsible for drawing the pieces in the grid
 startpieces proc far
-   ; row,col,piece,width.height,color
                                      mov                  startRow,0
                                      mov                  startCol,96
                                      lea                  bx,king
@@ -677,6 +587,10 @@ startpieces proc far
 startpieces endp
 
 
+
+
+
+; responsible for moving the pawn piece for team1
 move_pawn proc far
                                     call far ptr calctime
                                     cmp timeflag,'f'
@@ -960,6 +874,7 @@ move_pawn proc far
    move_pawn_exit:
                                      ret
 move_pawn endp
+; responsible for moving the bishop piece for team1
 move_bishop proc far
                                     call far ptr calctime
                                     cmp timeflag,'f'
@@ -1109,6 +1024,7 @@ move_bishop proc far
    move_bishop_exit:                 
                                      ret
 move_bishop endp
+; responsible for moving the king piece for team1
 move_king proc far                  
                                     call far ptr calctime
                                     cmp timeflag,'f'
@@ -1320,6 +1236,7 @@ move_king proc far
 
    jexit:                            ret
 move_king endp
+; responsible for moving the rook piece for team1
 move_rook proc  far
                                     
                                     call far ptr calctime
@@ -1453,6 +1370,7 @@ move_rook proc  far
    rexit:                            
                                      ret
 move_rook endp
+; responsible for moving the knight piece for team1
 move_knight proc  far 
                                     call far ptr calctime
                                     cmp timeflag,'f'
@@ -1690,7 +1608,7 @@ mov selected_col,-1
 move_knight endp
 
 
-
+; responsible for moving the pawn piece for team2
 movepawnTeam2 proc far
                                     call far ptr calctimeTeam2
                                     cmp timeflag,'f'
@@ -1852,6 +1770,7 @@ movepawnTeam2 proc far
    
   
 movepawnTeam2 endp
+; responsible for moving the bishop piece for team2
 move_bishopTeam2 proc far
   call far ptr calctimeTeam2
                                     cmp timeflag,'f'
@@ -1994,6 +1913,7 @@ move_bishopTeam2 proc far
    bishopexit:                 
                                      ret
 move_bishopTeam2 endp
+; responsible for moving the king piece for team2
 movekingTeam2 proc far
                                     call far ptr calctimeTeam2
                                     cmp timeflag,'f'
@@ -2205,6 +2125,7 @@ t2move_king_exitnomove:
 
    wjexit:                            ret
 movekingTeam2 endp
+; responsible for moving the rook piece for team2
 moverookTeam2 proc  far
 call far ptr calctimeTeam2
                                     cmp timeflag,'f'
@@ -2341,6 +2262,7 @@ t2move_rook_exitnomove:
    erexit:                            
                                      ret
 moverookTeam2 endp
+; responsible for moving the knight piece for team2
 moveknightteam2 proc  far
                                     call far ptr calctimeTeam2
                                     cmp timeflag,'f'
@@ -3096,7 +3018,6 @@ mov_until_select proc far
                                      ret
 mov_until_select endp
 move_piece proc far
-
                                      mov                  al,goto_row_grid
                                      dec                  al
                                      mov                  bl,8
@@ -4337,6 +4258,7 @@ enterTeam2:
                                 
                                      ret
 move_current_cell_or_select endp
+;responsible for getting the coordinates of the cell by its given number
 Get_Cell_Points proc far
                                  mov                      operand,8                                            ;operand is by deafult=8
                                  mov                      dl,operand
@@ -4369,7 +4291,7 @@ continue:
                                  mov                      Currcol,ax                                           ;Currcol must be a word
                                  ret
 Get_Cell_Points endp
-    ;it will Draw Original Cell Color while dehighlithing
+;responsible for Drawing  Original Cell Color while dehighlithing
 DrawOriginalCellColor proc far
                                
                                 
@@ -4553,6 +4475,7 @@ DrawOriginalCellColor proc far
     MyExit:                      
                                  ret
 DrawOriginalCellColor endp
+;responsible for dehighlighting the drid after a movement from team1
 Dehighlight_Grid proc far
                                  mov                      cell_number,1
                                  mov                      di,offset highlight_row1
@@ -4599,6 +4522,7 @@ Dehighlight_Grid proc far
                                  jnz                      Dehighlight_Grid_loop
                                  ret
 Dehighlight_Grid endp
+;responsible for dehighlighting the drid after a movement from team2
 Dehighlight_Grid_team2 proc far
                                  mov                      cell_number,1
                                  mov                      di,offset highlight_row1
@@ -4645,6 +4569,7 @@ Dehighlight_Grid_team2 proc far
                                  jnz                      t2Dehighlight_Grid_loop
                                  ret
 Dehighlight_Grid_team2 endp
+
 move_piecet2 proc far
                     
                                      mov                  al,goto_row_gridTeam2
@@ -4805,6 +4730,11 @@ breakpoint18:
               
                                      ret
 move_piecet2 endp
+
+
+
+
+;responsible for printing the message of game over notification
 game_over_notification proc far
 
 mov ax,0600h
@@ -4836,7 +4766,7 @@ CHECKk:
 
 ret
 game_over_notification endp
-
+;responsible for printing the message of checkmate of team2
 print_checkmate_team2 proc far
 mov ah,2
 mov dx,51825
@@ -4848,6 +4778,7 @@ mov dx, offset msg_checkmate1
 int 21h
 ret
 print_checkmate_team2 endp
+;responsible for printing the message of checkmate of team1
 print_checkmate proc far
 mov ah,2
 mov dx,51825
@@ -4859,6 +4790,7 @@ mov dx, offset msg_checkmate2
 int 21h
 ret
 print_checkmate endp
+;responsible for printing the message of removed piece of team1
 print_removed_team1 proc far
 
 mov ax,0600h
@@ -4920,6 +4852,7 @@ eexxiitt:
 
 ret
 print_removed_team1 endp
+;responsible for printing the message of removed piece of team2
 print_removed_team2 proc far
 
 mov ax,0600h
@@ -4981,8 +4914,7 @@ eexxiitt1:
 
 ret
 print_removed_team2 endp
-
-
+; responsible for time calculations for team1
 calctime proc far
                                mov timeflag,"t"
                                 mov ah,2CH
@@ -5032,7 +4964,7 @@ calctime proc far
 
 ret
 calctime endp
-
+; responsible for time calculations for team2
 calctimeTeam2 proc far
                                mov timeflag,"t"
                                 mov ah,2CH
@@ -5082,8 +5014,7 @@ calctimeTeam2 proc far
 
 ret
 calctimeTeam2 endp
-
-
+; responsible for time calculations for the whole game
 game_time proc far
 
                                     mov ah,2CH
@@ -5178,7 +5109,7 @@ int 10h
 
 ret
 game_time endp
-
+; responsible for displaying time number while playing 
 DISPLAYNUMBER proc far
 MOV bl,10
 DIV bl
@@ -5199,9 +5130,85 @@ ret
 
 
 
+
+
+; responsible for all the game logic
 main proc far
                                      mov                  ax,@data
                                      mov                  ds,ax
+; the start of the game menu  
+ClearScreen
+  ;set curser 1st column and first row
+               MoveCursor        01h 01h
+    ;display welcome message
+               PrintMsg          welcome
+    ;set curser
+               MoveCursor        02h 02h
+    ;read name from user
+               ReadMsg           name1
+    ;display enter
+               MoveCursor        20 2
+               PrintMsg          menter
+    ;wait for enter
+    CHECK:     mov               ah,1
+               int               16h
+               JZ                CHECK
+               mov               ah,0
+               int               16h
+               JZ                CHECK
+               cmp               al,13
+               jnz               CHECK
+    ;clear the screen
+               ClearScreen
+    ;set the curser
+               mov               bh,0
+               MoveCursor        05h 1ah
+    ;display home menu
+               PrintMsg          mf1
+    ;set the cursor
+               mov               bh,0
+               MoveCursor        07h 1ah
+               PrintMsg          mf2
+    ;set the curser      
+               mov               bh,0
+               MoveCursor        09h 1ah
+               PrintMsg          mesc
+    ;draw the line
+               mov               bh,0
+               MoveCursor        15h 00h
+
+               mov               cx,80
+    myloop:    
+               PrintChr          '-'
+               dec               cx
+               jnz               myloop
+    waitForKey:mov               ah,0
+               GetKeyPressedWait
+               cmp               ah,59
+               jz                F1Key
+               cmp               ah,60
+               jz                F2Key
+               cmp               ah,1
+               jz                ESCKey
+               jnz               waitForKey
+               
+    F1Key:     
+               ClearScreen
+              ;  will go to the chat module of the game
+               jmp                             rest
+    F2Key:     
+               ClearScreen
+              ;  start the logic of the game
+               jmp                 rest
+    ESCKey:    
+               ClearScreen
+               ; this is how to print or use the name of the user 
+               ; PrintMsg name1+2
+               MoveCursor 12,0
+               PrintMsg endProgram
+          CloseProgram
+    rest:      
+                                   ;  the start of the game logic
                                      mov ah,2CH
                                      INT 21h  
                                     mov start_hour,ch
@@ -5219,9 +5226,7 @@ main proc far
                                     add start_time,eax
                                     mov edx,0
                                    mov dl,start_second
-                                  add start_time,edx
-
-                                    
+                                   add start_time,edx
                                      ChgVideoMode
                                      mov                  ax,0A000H
                                      mov                  es,ax
@@ -5236,10 +5241,6 @@ main proc far
                                      mov                  pieceHeight,16
                                      mov                  pieceColor,3
                                      call                 far ptr Draw
-                                    ; Draw                 0,96,king,16,16,3
-                                     
-                                    
-
                                     MY_HIGHLIGHT_Rec_level2     161,0090
                                      mov                  startRow,161
                                      mov                  startCol,96
@@ -5249,10 +5250,7 @@ main proc far
                                      mov                  pieceHeight,16
                                      mov                  pieceColor,0
                                      call                 far ptr Draw
-                                    ; Draw                 0,96,king,16,16,3
-                                  
                                     call                 far ptr  mov_until_select
-   
                                      mov                  ah,4ch
                                      int                  21h
 main endp
