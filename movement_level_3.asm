@@ -23,7 +23,7 @@ move_pawn macro
               je             team1
               cmp            al ,'2'
               je             team2
-              jmp            exit
+              jmp far ptr            exit
 
     team1:    
               mov            dl,1                        ;;;;;;;;;row
@@ -34,7 +34,7 @@ move_pawn macro
               mov            highlight_row,cx
               mov            bx,23
               add            highlight_row,bx
-              jmp            change
+              jmp far ptr            change
 
     team2:    
               mov            dl,-1                       ;;;;;;;;;row
@@ -45,7 +45,7 @@ move_pawn macro
               mov            highlight_row,cx
               mov            bx,23
               sub            highlight_row,23
-              jmp            change
+              jmp far ptr            change
 
     change:   
               mov            bl, selected_row_grid
@@ -103,7 +103,7 @@ move_bishop macro
                 je             team1
                 cmp            al ,'2'
                 je             team2
-                jmp            exit
+                jmp far ptr            exit
 
     team1:      
     team2:      
@@ -143,7 +143,7 @@ move_bishop macro
                 PUSH           AX
                 cmp            flag,'f'
                 je             level2
-                jmp            compare1
+                jmp far ptr            compare1
 
                 
     level2:     
@@ -184,7 +184,7 @@ move_bishop macro
                 PUSH           AX
                 cmp            flag,'f'
                 je             level3
-                jmp            compare2
+                jmp far ptr            compare2
 
 
     level3:     
@@ -225,7 +225,7 @@ move_bishop macro
                 PUSH           AX
                 cmp            flag,'f'
                 je             level4
-                jmp            compare3
+                jmp far ptr            compare3
 
     level4:     
                 mov            bx,selected_col
@@ -265,7 +265,7 @@ move_bishop macro
                 PUSH           AX
                 cmp            flag,'f'
                 je             exit
-                jmp            compare4
+                jmp far ptr            compare4
 
 
 
@@ -299,7 +299,7 @@ move_rook macro
               je             team1
               cmp            al ,'2'
               je             team2
-              jmp            exit
+              jmp far ptr            exit
 
     team1:    
     team2:    
@@ -333,7 +333,7 @@ move_rook macro
               pop            ax
               highlight_goto
               PUSH           AX
-              jmp            compare1
+              jmp far ptr            compare1
 
                 
     level2:   
@@ -368,7 +368,7 @@ move_rook macro
               pop            ax
               highlight_goto
               PUSH           AX
-              jmp            compare2
+              jmp far ptr            compare2
 
 
     level3:   
@@ -403,7 +403,7 @@ move_rook macro
               pop            ax
               highlight_goto
               PUSH           AX
-              jmp            compare3
+              jmp far ptr            compare3
 
     level4:   
               mov            bx,selected_col
@@ -437,7 +437,7 @@ move_rook macro
               pop            ax
               highlight_goto
               PUSH           AX
-              jmp            compare4
+              jmp far ptr            compare4
 
 
 
@@ -476,7 +476,7 @@ move_knight macro
                 je             team1
                 cmp            al ,'2'
                 je             team2
-                jmp            exit
+                jmp far ptr            exit
  
     team1:      
     team2:      
@@ -803,7 +803,7 @@ highlight_goto macro
                    cmp              team,al
                    jz               exit11
                    highlight_option
-                   jmp              back
+                   jmp far ptr              back
     exit11:        
                    mov              flag,'f'
     back:          
@@ -866,12 +866,12 @@ highlight_option macro
                      je    team1
                      cmp   al,'2'
                      je    team2
-                     jmp   exit
+                     jmp far ptr   exit
 
     team1:           mov   check_color,3h
-                     jmp   to_piece
+                     jmp far ptr   to_piece
     team2:           mov   check_color,0h
-                     jmp   to_piece
+                     jmp far ptr   to_piece
 
     to_piece:        
                      
@@ -904,7 +904,7 @@ highlight_option macro
                      je    Bishop_draw
                      cmp   al,'r'
                      je    rook_draw
-                     jmp   exit
+                     jmp far ptr   exit
 
     horse_draw:      
                      mov   cx,highlight_col
@@ -915,7 +915,7 @@ highlight_option macro
                      mov   dl,check_color
                      Draw  row,column,knight,20,20,dl
                      sub   column,6
-                     jmp   exit
+                     jmp far ptr   exit
 
     queen_draw:      
                      mov   cx,highlight_col
@@ -926,7 +926,7 @@ highlight_option macro
                      mov   dl,check_color
                      Draw  row,column,queen,13,16,dl
                      sub   column,6
-                     jmp   exit
+                     jmp far ptr   exit
 
 
     pwan_draw:       
@@ -938,7 +938,7 @@ highlight_option macro
                      mov   dl,check_color
                      Draw  row,column,pawn,16,16,dl
                      sub   column,6
-                     jmp   exit
+                     jmp far ptr   exit
 
     king_draw:       
                      mov   cx,highlight_col
@@ -949,7 +949,7 @@ highlight_option macro
                      mov   dl,check_color
                      Draw  row,column,king,16,16,dl
                      sub   column,6
-                     jmp   exit
+                     jmp far ptr   exit
 
 
     Bishop_draw:     
@@ -961,7 +961,7 @@ highlight_option macro
                      mov   dl,check_color
                      Draw  row,column,Bishop,17,16,dl
                      sub   column,6
-                     jmp   exit
+                     jmp far ptr   exit
 
 
     rook_draw:       
@@ -973,7 +973,7 @@ highlight_option macro
                      mov   dl,check_color
                      Draw  row,column,rook,16,16,dl
                      sub   column,6
-                     jmp   exit
+                     jmp far ptr   exit
     exit:            
 
 endm
@@ -1091,7 +1091,7 @@ loop_until_goto macro
                     mov                      ah,00
                     int                      16h
                     move_goto_cell_or_select ah
-                    jmp                      check
+                    jmp far ptr                      check
     exit:           
                     mov                      goto_col,-1
                     mov                      goto_row,-1
@@ -1121,7 +1121,7 @@ move_goto_cell_or_select macro clicked
                              cmp                clicked,28             ;;;enter
                              je                 enter
 
-                             jmp                exit
+                             jmp far ptr                exit
 
     left:                    
                              cmp                current_col,00
@@ -1144,7 +1144,7 @@ move_goto_cell_or_select macro clicked
                              mov                column,dx
                              pop                dx
                              HIGHLIGHT_selected 1
-                             jmp                exit
+                             jmp far ptr                exit
 
 
 
@@ -1169,7 +1169,7 @@ move_goto_cell_or_select macro clicked
                              mov                column,dx
                              pop                dx
                              HIGHLIGHT_selected 1
-                             jmp                exit
+                             jmp far ptr                exit
 
     up:                      
                              cmp                current_row,0
@@ -1192,7 +1192,7 @@ move_goto_cell_or_select macro clicked
                              mov                column,dx
                              pop                dx
                              HIGHLIGHT_selected 1
-                             jmp                exit
+                             jmp far ptr                exit
 
     right:                   
                              cmp                current_col,210
@@ -1214,7 +1214,7 @@ move_goto_cell_or_select macro clicked
                              mov                column,dx
                              pop                dx
                              HIGHLIGHT_selected 1
-                             jmp                exit
+                             jmp far ptr                exit
 
     enter:                   
                              mov                ax,current_col
@@ -1231,7 +1231,7 @@ move_goto_cell_or_select macro clicked
 
                              move_piece
 
-                             jmp                exit
+                             jmp far ptr                exit
     exit:                    
                              popa
 endm
@@ -1264,7 +1264,7 @@ move_current_cell_or_select macro clicked
                                 cmp                clicked,28              ;;;enter
                                 je                 enter
 
-                                jmp                exit
+                                jmp far ptr                exit
 
     left:                       
                                 cmp                current_col,00
@@ -1287,7 +1287,7 @@ move_current_cell_or_select macro clicked
                                 mov                column,dx
                                 pop                dx
                                 HIGHLIGHT_selected 1
-                                jmp                exit
+                                jmp far ptr                exit
 
 
 
@@ -1312,7 +1312,7 @@ move_current_cell_or_select macro clicked
                                 mov                column,dx
                                 pop                dx
                                 HIGHLIGHT_selected 1
-                                jmp                exit
+                                jmp far ptr                exit
 
     up:                         
                                 cmp                current_row,0
@@ -1335,7 +1335,7 @@ move_current_cell_or_select macro clicked
                                 mov                column,dx
                                 pop                dx
                                 HIGHLIGHT_selected 1
-                                jmp                exit
+                                jmp far ptr                exit
 
     right:                      
                                 cmp                current_col,210
@@ -1357,7 +1357,7 @@ move_current_cell_or_select macro clicked
                                 mov                column,dx
                                 pop                dx
                                 HIGHLIGHT_selected 1
-                                jmp                exit
+                                jmp far ptr                exit
 
     enter:                      
    
@@ -1414,30 +1414,30 @@ move_current_cell_or_select macro clicked
                                 je                 r
                                 ; cmp                al,'q'
                                 ; je                 q
-                                jmp                exit
+                                jmp far ptr                exit
     kh:                         
                                 move_knight
-                                jmp                exit1
+                                jmp far ptr                exit1
    
     p:                          
                                 move_pawn
-                                jmp                exit1
+                                jmp far ptr                exit1
     r:                          
                                 move_rook
-                                jmp                exit1
+                                jmp far ptr                exit1
     b:                          
                                 move_bishop
-                                jmp                exit1
+                                jmp far ptr                exit1
     ; q:                          
     ;                             move_rook
     ;                             move_bishop
                                
-                                jmp                exit1
+                                jmp far ptr                exit1
 
 
     exit1:                      
                                 loop_until_goto
-                                jmp                exit
+                                jmp far ptr                exit
     exit:                       
 endm
 
@@ -1452,7 +1452,7 @@ mov_until_select macro
                      mov                         ah,00
                      int                         16h
                      move_current_cell_or_select ah
-                     jmp                         check
+                     jmp far ptr                         check
     exit:            
                      popa
 endm
@@ -1707,7 +1707,7 @@ HIGHLIGHT_selected macro flag
                        je               draw_w
                        cmp              al ,'b'
                        je               draw_b
-                       jmp              exit
+                       jmp far ptr              exit
 
 
 
@@ -1715,17 +1715,17 @@ HIGHLIGHT_selected macro flag
 
                        MYBrownRec       row,column
 
-                       jmp              to_team_color
+                       jmp far ptr              to_team_color
     draw_w:            
 
                        MYWhiteRec       row,column
-                       jmp              to_team_color
+                       jmp far ptr              to_team_color
 
     draw_highlight:    
 
 
                        MY_HIGHLIGHT_Rec current_row,current_col
-                       jmp              to_team_color
+                       jmp far ptr              to_team_color
 
 
 
@@ -1750,12 +1750,12 @@ HIGHLIGHT_selected macro flag
                        je               team1
                        cmp              al,'2'
                        je               team2
-                       jmp              exit
+                       jmp far ptr              exit
 
     team1:             mov              check_color,3h
-                       jmp              to_piece
+                       jmp far ptr              to_piece
     team2:             mov              check_color,0h
-                       jmp              to_piece
+                       jmp far ptr              to_piece
 
     to_piece:          
                        mov              al,current_col_grid
@@ -1792,7 +1792,7 @@ HIGHLIGHT_selected macro flag
                        je               Bishop_draw
                        cmp              al,'r'
                        je               rook_draw
-                       jmp              exit
+                       jmp far ptr              exit
 
     horse_draw:        
                        add              column,6
@@ -1800,7 +1800,7 @@ HIGHLIGHT_selected macro flag
 
                        Draw             row,column,knight,20,20,dl
                        sub              column,6
-                       jmp              exit
+                       jmp far ptr              exit
 
     queen_draw:        
 
@@ -1808,7 +1808,7 @@ HIGHLIGHT_selected macro flag
                        mov              dl,check_color
                        Draw             row,column,queen,13,16,dl
                        sub              column,6
-                       jmp              exit
+                       jmp far ptr              exit
 
 
     pwan_draw:         
@@ -1817,7 +1817,7 @@ HIGHLIGHT_selected macro flag
                        mov              dl,check_color
                        Draw             row,column,pawn,16,16,dl
                        sub              column,6
-                       jmp              exit
+                       jmp far ptr              exit
 
     king_draw:         
 
@@ -1825,7 +1825,7 @@ HIGHLIGHT_selected macro flag
                        mov              dl,check_color
                        Draw             row,column,king,16,16,dl
                        sub              column,6
-                       jmp              exit
+                       jmp far ptr              exit
 
 
     Bishop_draw:       
@@ -1834,7 +1834,7 @@ HIGHLIGHT_selected macro flag
                        mov              dl,check_color
                        Draw             row,column,Bishop,17,16,dl
                        sub              column,6
-                       jmp              exit
+                       jmp far ptr              exit
 
 
     rook_draw:         
@@ -1842,7 +1842,7 @@ HIGHLIGHT_selected macro flag
                        mov              dl,check_color
                        Draw             row,column,rook,16,16,dl
                        sub              column,6
-                       jmp              exit
+                       jmp far ptr              exit
 
     exit:              
 

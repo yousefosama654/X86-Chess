@@ -557,7 +557,7 @@ move_current_cell_or_select macro clicked
     exit1:                      
                                 call               far ptr               loop_until_goto
     ; call               far ptr               Dehighlight_Grid
-                                DrawGrid
+    ; DrawGrid
                                 jmp far ptr                exit
     exit:                       
 endm
@@ -635,92 +635,31 @@ MYBrownRec MACRO startrow,startcol
                cmp   si,bx
                jnz   square
 ENDM
-DrawGrid MACRO
-             local      row
-             local      col
-             local      row1
-             local      col1
-             mov        di,0
-             mov        RowVar,0
-    col:     
-    row:     
-             MYWhiteRec RowVar, di
-             add        di,30
-             MYBrownRec RowVar,di
-             add        di,30
-             cmp        di,240
-             jnz        row
-             mov        di,0
-             add        RowVar,46
-             cmp        RowVar,184
-             jnz        col
-             mov        di,0
-             mov        rowvar,23
-    col1:    
-    row1:    
-             MYBrownRec RowVar, di
-             add        di,30
-             MYWhiteRec RowVar,di
-             add        di,30
-             cmp        di,240
-             jnz        row1
-             mov        di,0
-             add        RowVar,46
-             cmp        RowVar,207
-             jnz        col1
 
-               
-ENDM
 Draw MACRO startRow,startCol,piece,width,height,c
-              local   drawPiece
-              push    dx
-              mov     ax,0A000H
-              mov     es,ax
-              mov     si,offset piece
-              mov     ax,startRow
-              mov     bx,320
-              mul     bx
-              add     ax,startCol
-              mov     di,ax
-              mov     cx,width
-              
-              mov     PieceHeight,height
-              pop     dx
-              mov     color,c
+              local drawPiece
+              push  dx
+              mov   ax,0A000H
+              mov   es,ax
+              mov   si,offset piece
+              mov   ax,startRow
+              mov   bx,320
+              mul   bx
+              add   ax,startCol
+              mov   di,ax
+              mov   cx,width
+              mov   PieceHeight,height
+              pop   dx
+              mov   color,c
            
     drawPiece:
               
-              drawRow
-                
-                
-              add     di,320
-              dec     cx
-              jnz     drawPiece
+              call  far ptr  drawRow
+              add   di,320
+              dec   cx
+              jnz   drawPiece
 ENDM
-drawRow macro
-               local draw1
-               local background
-               push  di
-               push  cx
 
-               mov   cx,PieceHeight
-    draw1:     
-               mov   al,[si]
-               cmp   al,00H
-               je    background
-               cmp   al,02H
-               je    background
-               mov   dl,color
-               mov   dh,0
-               mov   es:[di],dx
-    background:
-               inc   di
-               inc   si
-               dec   cx
-               jnz   draw1
-               pop   cx
-               pop   di
-endm
 
 MY_HIGHLIGHT_Rec MACRO startrow,startcol
                      local square
@@ -748,45 +687,6 @@ MY_HIGHLIGHT_Rec MACRO startrow,startcol
                      jnz   square
 ENDM
 
-startpieces MACRO
-                local l
-                Draw  0,96,king,16,16,3
-                Draw  161,96,king,16,16,0
-     
-                Draw  0,126,queen,13,16,3
-                Draw  161,126,queen,13,16,0
-     
-                mov   cx,6
-    l:          
-    
-                push  cx
-                Draw  23,cx,pawn,16,16,3
-                pop   cx
-                push  cx
-                Draw  138,cx,pawn,16,16,0
-                pop   cx
-                add   cx,30
-                cmp   cx,240+6
-                jne   l
-
-                Draw  0,66,Bishop,17,16,3
-                Draw  0,156,Bishop,17,16,3
-                Draw  161,66,Bishop,17,16,0
-                Draw  161,156,Bishop,17,16,0
-
-                Draw  0,36,knight,20,20,3
-                Draw  0,186,knight,20,20,3
-                Draw  161,36,knight,20,20,0
-                Draw  161,186,knight,20,20,0
-
-                Draw  0,6,rook,16,16,3
-                Draw  0,216,rook,16,16,3
-                Draw  161,6,rook,16,16,0
-                Draw  161,216,rook,16,16,0
-
-    
- 
-ENDM
 
 HIGHLIGHT_selected macro flag
                        local            draw_b
@@ -969,20 +869,15 @@ HIGHLIGHT_selected macro flag
 
 
 endm
-
-
-
-
-
-.model huge
-.stack 64
+.model large 
+; .stack 64
 .data
     row                dw ?
     column             dw ?
-    team1_pos          dw 0,0 ,0,30,00,60,00,90,0,120,0,150,0,180,0,210
-                       dw 23,0,23,30,23,60 ,23,90,23,120,23,150,23,180,23,210
-    team2_pos          dw 138,0,138,30,138,60,138,90,138,120,138,150,138,150,138,210
-                       dw 161,0,161,30,161,60,161,90,161,120,161,150,161,180,161,210
+    ; team1_pos          dw 0,0 ,0,30,00,60,00,90,0,120,0,150,0,180,0,210
+    ;                  dw 23,0,23,30,23,60 ,23,90,23,120,23,150,23,180,23,210
+    ;   team2_pos          dw 138,0,138,30,138,60,138,90,138,120,138,150,138,150,138,210
+    ;                    dw 161,0,161,30,161,60,161,90,161,120,161,150,161,180,161,210
     current_row        dw 0                                                                                                     ;;;;pixel
     current_col        dw 90                                                                                                    ;;;;pixel
     current_row_grid   db 1
@@ -1142,6 +1037,60 @@ endm
     ; (row*8)+col
 
 .code
+
+drawRow proc far
+                                 push                     di
+                                 push                     cx
+                                 mov                      cx,PieceHeight
+    draw1:                       
+                                 mov                      al,[si]
+                                 cmp                      al,00H
+                                 je                       background
+                                 cmp                      al,02H
+                                 je                       background
+                                 mov                      dl,color
+                                 mov                      dh,0
+                                 mov                      es:[di],dx
+    background:                  
+                                 inc                      di
+                                 inc                      si
+                                 dec                      cx
+                                 jnz                      draw1
+                                 pop                      cx
+                                 pop                      di
+                                 ret
+drawRow ENDP
+startpieces proc far
+                
+                                 Draw                     0,96,king,16,16,3
+                                 Draw                     161,96,king,16,16,0
+                                 Draw                     0,126,queen,13,16,3
+                                 Draw                     161,126,queen,13,16,0
+                                 mov                      cx,6
+    l:                           
+                                 push                     cx
+                                 Draw                     23,cx,pawn,16,16,3
+                                 pop                      cx
+                                 push                     cx
+                                 Draw                     138,cx,pawn,16,16,0
+                                 pop                      cx
+                                 add                      cx,30
+                                 cmp                      cx,240+6
+                                 jne                      l
+                                 Draw                     0,66,Bishop,17,16,3
+                                 Draw                     0,156,Bishop,17,16,3
+                                 Draw                     161,66,Bishop,17,16,0
+                                 Draw                     161,156,Bishop,17,16,0
+                                 Draw                     0,36,knight,20,20,3
+                                 Draw                     0,186,knight,20,20,3
+                                 Draw                     161,36,knight,20,20,0
+                                 Draw                     161,186,knight,20,20,0
+                                 Draw                     0,6,rook,16,16,3
+                                 Draw                     0,216,rook,16,16,3
+                                 Draw                     161,6,rook,16,16,0
+                                 Draw                     161,216,rook,16,16,0
+                                 ret
+startpieces ENDP
 move_pawn proc far
              
                                  mov                      al,selected_col_grid
@@ -1993,9 +1942,10 @@ move_king proc far
                                  cmp                      highlight_flag,'f'
                                  je                       jexit
                                  call                     far ptr                     set_highlighled_true
+
+
     jexit:                       ret
 move_king endp
-
 set_highlighled_true proc far
                                  mov                      bl,highlight_row_grid
                                  dec                      bl
@@ -2015,8 +1965,6 @@ set_highlighled_true proc far
                                  ret
 set_highlighled_true endp
     ;looping over the grid and dehighlight it
-
-    ;description
 Get_Cell_Points PROC far
                                  mov                      operand,8                                            ;operand is by deafult=8
                                  mov                      ax,bx
@@ -2165,7 +2113,7 @@ main proc far
                                  mov                      ax,0A000H
                                  mov                      es,ax
                                  DrawGrid
-                                 startpieces
+                                 call                     far ptr startpieces
                                  MY_HIGHLIGHT_Rec         00,0090
                                  Draw                     0,96,king,16,16,3
                                  mov_until_select
