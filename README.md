@@ -1,7 +1,7 @@
 # X86-Chess
 <h1 align='center'>Real Time Chess</h1>
 <div align='center'>
-   <img  src="/Images/logo.png"  >
+   <img  src="/Images/logo.jpeg"  >
  </div>
  <h2 align='center'> 🕮 Introduction & Background 🕮 </h2>
 <p align='justify'>
