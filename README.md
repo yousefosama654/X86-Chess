@@ -34,7 +34,7 @@ Two functions are to be implemented: chatting, and a two-player real-time chess 
 <tr>
     <td align="center">
         <a href="https://github.com/yousefosama654">
-            <img src="https://avatars.githubusercontent.com/<yousefosama654>" width="100;" alt="yousefosama654"/>
+            <img src="https://avatars.githubusercontent.com/u/93356614?v=4" width="100;" alt="yousefosama654"/>
             <br />
             <sub><b>Yousef</b></sub>
         </a>
