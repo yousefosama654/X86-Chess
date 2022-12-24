@@ -3111,7 +3111,8 @@ move_piece proc far
                                      mov                  al,'r'
                                      cmp                  cl,al
                                      jne                   move_piece_breakpoint1
-                                     
+                                     mov al,'f'
+                                     mov                   [di],al
                                      mov                  al,selected_col_grid
                                      dec                  al
                                      mov                  bl,3
@@ -3199,12 +3200,10 @@ move_piece_breakpoint18:
                                      mov                  al,goto_row_grid
                                      mov                  current_row_grid,al
 
-                                     mov                  ax,goto_col
-                                     mov                  column,ax
-                                     mov                  ax, goto_row
-                                     mov                  row,ax
-                                     mov                  al,0
+                                    
+                                     mov                  al,1
                                      call                 far ptr HIGHLIGHT_selected
+
                                       mov ah,2CH
                                       INT 21h  
                                     
@@ -3341,7 +3340,7 @@ HIGHLIGHT_selected proc far
    HIGHLIGHT_selected_draw_highlight:                                                                                 ; will be deleted soon (Nesma)
 
                                    
-                                     MY_HIGHLIGHT_Rec     current_row,current_col
+                                     MY_HIGHLIGHT_Rec     row,column
                                      jmp                  far ptr              HIGHLIGHT_selected_to_team_color
 
 
@@ -4662,7 +4661,8 @@ move_piecet2 proc far
                                      mov                  al,'p'
                                      cmp                  cl,al
                                      jne                 breakpoint111
-                                     
+                                      mov al,'f'
+                                      mov [di],al
                                      mov                  al,selected_col_gridTeam2
                                      dec                  al
                                      mov                  bl,3
@@ -4755,7 +4755,7 @@ breakpoint18:
                                      mov                  column,ax
                                      mov                  ax, goto_rowTeam2
                                      mov                  row,ax
-                                     mov                  al,0
+                                     mov                  al,1
                                      call                 far ptr HIGHLIGHTSelectedTeam2
 
 
