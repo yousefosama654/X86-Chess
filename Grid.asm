@@ -6,10 +6,6 @@ include macros.inc
 include graphics.inc
    row                dw ?
    column             dw ?
-   team1_pos          dw 0,0 ,0,30,00,60,00,90,0,120,0,150,0,180,0,210
-                      dw 23,0,23,30,23,60 ,23,90,23,120,23,150,23,180,23,210
-   team2_pos          dw 138,0,138,30,138,60,138,90,138,120,138,150,138,150,138,210
-                      dw 161,0,161,30,161,60,161,90,161,120,161,150,161,180,161,210
    current_row        dw 0                                                                                                    ;;;;pixel
    current_col        dw 90                                                                                                   ;;;;pixel
    current_row_grid   db 1
@@ -110,8 +106,8 @@ include graphics.inc
    cell_number        db 0
    cell_add           dw 0
    
-   msg1        db     "Game over team2 won     ",'$'
-   msg2        db    "Game over team1 won     ",'$'
+   msg1        db     "Game over team2 won:F4-new game ",'$'
+   msg2        db    "Game over team1 won:F4-new game",'$'
    msgking1 db "king of team1 has died  ",'$'
    msgqueen1 db "queen of team1 has died ",'$'
    msgbishop1 db "bishop of team1 has died",'$'
@@ -160,166 +156,6 @@ hrs  db  0
    ; current_pos dw 00,90
    ; (row*8)+col
 .code
-;responsible for drawing a white rec in a grid
-MYWhiteRec MACRO startrow,startcol
-                                     local                square
-                                     local                right
-                                     mov                  cx,startcol                                                 ;Column //x
-                                     mov                  dx,startrow                                                 ;Row //
-                                     mov                  al,0fh                                                      ;Pixel color
-                                     mov                  ah,0ch                                                      ;Draw Pixel Command
-                                     mov                  si,startrow
-   square:                           
-   right:                            int                  10h
-                                     inc                  cx
-                                     mov                  bx,0
-                                     add                  bx,30
-                                     add                  bx,startcol
-                                     cmp                  cx,bx
-                                     jnz                  right                                                       ; this will draw a line of 25 length
-                                     inc                  si
-                                     mov                  cx,startcol                                                 ;Column //x
-                                     inc                  dx                                                          ;Row //y
-                                     mov                  bx,0
-                                     add                  bx,23
-                                     add                  bx,startrow
-                                     cmp                  si,bx
-                                     jnz                  square
-ENDM
-;responsible for drawing a brown rec in a grid
-MYBrownRec MACRO startrow,startcol
-                                     local                square
-                                     local                right
-                                     mov                  cx,startcol                                                 ;Column //x
-                                     mov                  dx,startrow                                                 ;Row //y
-                                     mov                  al,06h                                                      ;Pixel color
-                                     mov                  ah,0ch                                                      ;Draw Pixel Command
-                                     mov                  si,startrow
-   square:                           
-   right:                            int                  10h
-                                     inc                  cx
-                                     mov                  bx,0
-                                     add                  bx,30
-                                     add                  bx,startcol
-                                     cmp                  cx,bx
-                                     jnz                  right                                                       ; this will draw a line of 25 length
-                                     inc                  si
-                                     mov                  cx,startcol                                                 ;Column //x
-                                     inc                  dx                                                          ;Row //y
-                                     mov                  bx,0
-                                     add                  bx,23
-                                     add                  bx,startrow
-                                     cmp                  si,bx
-                                     jnz                  square
-ENDM
-MY_HIGHLIGHT_Rec MACRO startrow,startcol
-                                     local                square
-                                     local                right
-                                     mov                  cx,startcol                                                 ;Column //x
-                                     mov                  dx,startrow                                                 ;Row //
-                                     mov                  al,08h                                                      ;Pixel color
-                                     mov                  ah,0ch                                                      ;Draw Pixel Command
-                                     mov                  si,startrow
-   square:                           
-   right:                            int                  10h
-                                     inc                  cx
-                                     mov                  bx,0
-                                     add                  bx,30
-                                     add                  bx,startcol
-                                     cmp                  cx,bx
-                                     jnz                  right                                                       ; this will draw a line of 25 length
-                                     inc                  si
-                                     mov                  cx,startcol                                                 ;Column //x
-                                     inc                  dx                                                          ;Row //y
-                                     mov                  bx,0
-                                     add                  bx,23
-                                     add                  bx,startrow
-                                     cmp                  si,bx
-                                     jnz                  square
-ENDM
-MY_HIGHLIGHT_Rec_level2 MACRO startrow,startcol
-                                     local                square
-                                     local                right
-                                     mov                  cx,startcol                                                 ;Column //x
-                                     mov                  dx,startrow                                                 ;Row //
-                                     mov                  al,07h                                                      ;Pixel color
-                                     mov                  ah,0ch                                                      ;Draw Pixel Command
-                                     mov                  si,startrow
-   square:                           
-   right:                            int                  10h
-                                     inc                  cx
-                                     mov                  bx,0
-                                     add                  bx,30
-                                     add                  bx,startcol
-                                     cmp                  cx,bx
-                                     jnz                  right                                                       ; this will draw a line of 25 length
-                                     inc                  si
-                                     mov                  cx,startcol                                                 ;Column //x
-                                     inc                  dx                                                          ;Row //y
-                                     mov                  bx,0
-                                     add                  bx,23
-                                     add                  bx,startrow
-                                     cmp                  si,bx
-                                     jnz                  square
-ENDM
-; responsible for highlight a cell in red for team1
-MY_red_HIGHLIGHT_Rec MACRO startrow,startcol
-                                    local                square
-                                     local                right
-                                     mov                  cx,startcol                                                 ;Column //x
-                                     mov                  dx,startrow                                                 ;Row //
-                                     mov                  al,0ch      ;;;e    ;;;;;c                                            ;Pixel color
-                                     mov                  ah,0ch                                                      ;Draw Pixel Command
-                                     mov                  si,startrow
-   square:                           
-   right:                            int                  10h
-                                     inc                  cx
-                                     mov                  bx,0
-                                     add                  bx,30
-                                     add                  bx,startcol
-                                     cmp                  cx,bx
-                                     jnz                  right                                                       ; this will draw a line of 25 length
-                                     inc                  si
-                                     mov                  cx,startcol                                                 ;Column //x
-                                     inc                  dx                                                          ;Row //y
-                                     mov                  bx,0
-                                     add                  bx,23
-                                     add                  bx,startrow
-                                     cmp                  si,bx
-                                     jnz                  square
-
-                                    
-endm
-; responsible for highlight a cell in purple for team2
-MY_purple_HIGHLIGHT_Rec MACRO startrow,startcol
-                                     local                square
-                                     local                right
-                                     mov                  cx,startcol                                                 ;Column //x
-                                     mov                  dx,startrow                                                 ;Row //
-                                     mov                  al,09h      ;;;e    ;;;;;c                                            ;Pixel color
-                                     mov                  ah,0ch                                                      ;Draw Pixel Command
-                                     mov                  si,startrow
-   square:                           
-   right:                            int                  10h
-                                     inc                  cx
-                                     mov                  bx,0
-                                     add                  bx,30
-                                     add                  bx,startcol
-                                     cmp                  cx,bx
-                                     jnz                  right                                                       ; this will draw a line of 25 length
-                                     inc                  si
-                                     mov                  cx,startcol                                                 ;Column //x
-                                     inc                  dx                                                          ;Row //y
-                                     mov                  bx,0
-                                     add                  bx,23
-                                     add                  bx,startrow
-                                     cmp                  si,bx
-                                     jnz                  square
-endm
-
-
-
-
 
 ; responsible for drawing the full Grid
 DrawGrid proc far
@@ -591,7 +427,7 @@ startpieces endp
 
 
 ; responsible for moving the pawn piece for team1
-move_pawn proc far
+move_pawn proc far       
                                     call far ptr calctime
                                     cmp timeflag,'f'
                                     jne highhigh
@@ -869,9 +705,16 @@ move_pawn proc far
    mov selected_col,-1
    mov selected_col_grid,-1
    mov selected_row,-1
-   mov selected_row_grid,-1   
+   mov selected_row_grid,-1 
+   jmp ret_exit1  
 
    move_pawn_exit:
+
+   call far ptr highlighted_cells_existing_team1
+   cmp cx,0
+   je move_pawn_exitnomove
+   ret_exit1:
+
                                      ret
 move_pawn endp
 ; responsible for moving the bishop piece for team1
@@ -1012,6 +855,7 @@ move_bishop proc far
                                      cmp                  highlight_flag,'0'
                                      je                   move_bishop_exit
                                      jmp                  far ptr                  move_bishop_compare4
+                                     jmp             move_bishop_exit
 
      move_bishop_exitnomove:             
 
@@ -1020,8 +864,15 @@ move_bishop proc far
    mov selected_col_grid,-1
    mov selected_row,-1
    mov selected_row_grid,-1  
+  jmp   ret_exit2
 
-   move_bishop_exit:                 
+   move_bishop_exit:  
+
+
+    call far ptr highlighted_cells_existing_team1
+   cmp cx,0
+   je move_bishop_exitnomove
+   ret_exit2:               
                                      ret
 move_bishop endp
 ; responsible for moving the king piece for team1
@@ -1225,16 +1076,22 @@ move_king proc far
                                      cmp                  highlight_flag,'f'
                                      je                   jexit
                                      call                 far ptr          set_highlighled_true
-
+                                    jmp         jexit
 
     move_king_exitnomove:
     mov selected_col,-1
    mov selected_col_grid,-1
    mov selected_row,-1
    mov selected_row_grid,-1 
+   jmp  ret_exit3
 
 
-   jexit:                            ret
+   jexit:      
+   call far ptr highlighted_cells_existing_team1
+   cmp cx,0
+   je move_king_exitnomove
+   ret_exit3:
+                         ret
 move_king endp
 ; responsible for moving the rook piece for team1
 move_rook proc  far
@@ -1361,13 +1218,19 @@ move_rook proc  far
                                      cmp                  highlight_flag,'0'
                                      je                   rexit
                                      jmp                  far ptr                  rcompare4
-
+                                     jmp                 rexit
     move_rook_exitnomove:
     mov selected_col,-1
    mov selected_col_grid,-1
    mov selected_row,-1
    mov selected_row_grid,-1 
-   rexit:                            
+   jmp  ret_exit4
+
+   rexit:      
+   call far ptr highlighted_cells_existing_team1
+   cmp cx,0
+   je move_rook_exitnomove
+   ret_exit4:                      
                                      ret
 move_rook endp
 ; responsible for moving the knight piece for team1
@@ -1595,14 +1458,21 @@ move_knight proc  far
                                      cmp                  highlight_flag,'f'
                                      je                   kexit
                                      call                 far ptr                     set_highlighled_true
-    
+                                    jmp                    kexit
     move_knight_exitnomove:
 mov selected_col,-1
    mov selected_col_grid,-1
    mov selected_row,-1
    mov selected_row_grid,-1 
+   jmp ret_exit5
 
-   kexit:          
+
+   kexit:     
+
+   call far ptr highlighted_cells_existing_team1
+   cmp cx,0
+   je move_knight_exitnomove
+   ret_exit5:      
                      ret
                         
 move_knight endp
@@ -1764,8 +1634,16 @@ movepawnTeam2 proc far
    mov selected_colTeam2,-1
    mov selected_col_gridTeam2,-1
    mov selected_rowTeam2,-1
-   mov selected_row_gridTeam2,-1  
-   movepawnTeam2_move_pawn_exit:                   
+   mov selected_row_gridTeam2,-1 
+   jmp ret_exit6
+
+
+   movepawnTeam2_move_pawn_exit:   
+
+                                    call far ptr team2_highlighted_cells_existing
+                                     cmp cx,0
+                                    je t2move_pawn_exitnomove
+                                      ret_exit6:                
                                      ret
    
   
@@ -1909,8 +1787,14 @@ move_bishopTeam2 proc far
    mov selected_colTeam2,-1
    mov selected_col_gridTeam2,-1
    mov selected_rowTeam2,-1
-   mov selected_row_gridTeam2,-1    
-   bishopexit:                 
+   mov selected_row_gridTeam2,-1 
+   jmp ret_exit7
+
+   bishopexit:       
+    call far ptr team2_highlighted_cells_existing
+                                     cmp cx,0
+                                    je t2move_bishop_exitnomove
+                                      ret_exit7:            
                                      ret
 move_bishopTeam2 endp
 ; responsible for moving the king piece for team2
@@ -2122,12 +2006,19 @@ t2move_king_exitnomove:
    mov selected_col_gridTeam2,-1
    mov selected_rowTeam2,-1
    mov selected_row_gridTeam2,-1   
+   jmp ret_exit8
 
-   wjexit:                            ret
+   wjexit:          
+                              call far ptr team2_highlighted_cells_existing
+                                     cmp cx,0
+                                    je t2move_king_exitnomove
+                                      ret_exit8:   
+   
+                     ret
 movekingTeam2 endp
 ; responsible for moving the rook piece for team2
 moverookTeam2 proc  far
-call far ptr calctimeTeam2
+                                    call far ptr calctimeTeam2
                                     cmp timeflag,'f'
                                     jne highhigh99
                                     jmp far ptr t2move_rook_exitnomove
@@ -2258,8 +2149,13 @@ t2move_rook_exitnomove:
    mov selected_col_gridTeam2,-1
    mov selected_rowTeam2,-1
    mov selected_row_gridTeam2,-1  
+  jmp ret_exit9
+   erexit:    
 
-   erexit:                            
+    call far ptr team2_highlighted_cells_existing
+                                     cmp cx,0
+                                    je t2move_rook_exitnomove
+                                      ret_exit9:                           
                                      ret
 moverookTeam2 endp
 ; responsible for moving the knight piece for team2
@@ -2495,7 +2391,14 @@ moveknightteam2 proc  far
    mov selected_col_gridTeam2,-1
    mov selected_rowTeam2,-1
    mov selected_row_gridTeam2,-1  
-   kexit121:                            ret
+    jmp ret_exit11
+
+   kexit121:    
+   call far ptr team2_highlighted_cells_existing
+                                     cmp cx,0
+                                    je t2move_knight_exitnomove
+                                      ret_exit11:     
+                           ret
                         
 moveknightteam2 endp
 
@@ -3745,8 +3648,10 @@ HIGHLIGHTSelectedTeam2 proc far
 HIGHLIGHTSelectedTeam2 endp
 
 move_current_cell_or_select proc far
-                                   
-                                     cmp                  clicked,30                                                 ;;;left -->>A
+                                     cmp                  clicked,3eh 
+                                     JNE                  GGGG
+                                     CALL FAR PTR end_game_F4
+     GGGG:                           cmp                  clicked,30                                                 ;;;left -->>A
                                      jne                  next_cur1Team2
                                      jmp                  far ptr                 leftTeam2
    next_cur1Team2:                        
@@ -4760,9 +4665,19 @@ mov ah, 9
 mov dx, offset msg1
 int 21h
  exs:   
+
+ game_over_f4_check:           
+                                     mov                  ah,01H
+                                     int                  16h
+                                     jz                   game_over_f4_check
+                                     mov                  ah,00
+                                     int                  16h
+                                     cmp                  ah,3eh
+                                     je                    game_over_f4_exit
+                                     jmp                  far ptr                  game_over_f4_check
+   game_over_f4_exit:            
                              
-CHECKk: 
- jmp CHECkk
+   call far ptr end_game_F4
 
 ret
 game_over_notification endp
@@ -5127,17 +5042,585 @@ MOV AH,02H
 INT 21H
 ret
  DISPLAYNUMBER endp 
+; responsible for ending game when any player press F4
+end_game_F4 proc far
+               
+               ClearScreen
+    ;set the curser
+               mov               bh,0
+               MoveCursor        05h 1ah
+    ;display home menu
+               PrintMsg          mf1
+    ;set the cursor
+               mov               bh,0
+               MoveCursor        07h 1ah
+               PrintMsg          mf2
+    ;set the curser      
+               mov               bh,0
+               MoveCursor        09h 1ah
+               PrintMsg          mesc
+    ;draw the line
+               mov               bh,0
+               MoveCursor        15h 00h
+
+               mov               cx,80
+    F4myloop:    
+               PrintChr          '-'
+               dec               cx
+               jnz               F4myloop
+    F4waitForKey:mov               ah,0
+               GetKeyPressedWait
+               cmp               ah,59
+               jz                F4_F1Key
+               cmp               ah,60
+               jz                F4_F2Key
+               cmp               ah,1
+               jz                F4_ESCKey
+               jnz               F4waitForKey
+               
+    F4_F1Key:     
+               ClearScreen
+                call far ptr reinitialize_data_segmant
+              ;  will go to the chat module of the game
+               jmp                             rest
+    F4_F2Key:     
+               ClearScreen
+               call far ptr reinitialize_data_segmant
+              ;  start the logic of the game
+               jmp                 rest
+    F4_ESCKey:    
+               ClearScreen
+               ; this is how to print or use the name of the user 
+               ; PrintMsg name1+2
+               MoveCursor 12,0
+               PrintMsg endProgram
+          CloseProgram
+ret
+end_game_F4 endp 
+; responsible for reinitializing data segemnt to start game agin after pressing press F4 then F1
+reinitialize_data_segmant proc far
 
 
+   mov start_hour , 0
+   mov start_minute  , 0
+   mov start_second , 0
+   mov current_hour , 0
+   mov current_minute  , 0
+   mov current_second , 0
+   mov display_hour , 0
+   mov display_minute  , 0
+   mov display_second , 0
+   mov start_time , 0
+  mov  game_over_flag_team,-1
+  mov  current_row,0                                                                                                    ;;;;pixel
+  mov current_col,90                                                                                                   ;;;;pixel
+  mov current_row_grid,1
+  mov current_col_grid,4
+  mov selected_row,-1                                                                                                   ;;;;pixel
+  mov selected_col,-1                                                                                                   ;;;;pixel
+  mov selected_row_grid,-1
+  mov selected_col_grid,-1
 
 
+   mov current_rowTeam2,161                                                                                                   ;;;;pixel
+   mov current_colTeam2,90                                                                                                   ;;;;pixel
+   mov current_row_gridTeam2,8
+   mov current_col_gridTeam2,4
+   mov selected_rowTeam2,-1                                                                                                   ;;;;pixel
+   mov selected_colTeam2,-1                                                                                                   ;;;;pixel
+   mov selected_row_gridTeam2,-1
+   mov  selected_col_gridTeam2,-1
+ 
+   mov goto_row,-1                                                                                                   ;;;;pixel
+   mov goto_col,-1                                                                                                   ;;;;pixel
+   mov goto_row_grid,-1
+   mov goto_col_grid,-1
+ 
+   mov goto_rowTeam2,-1                                                                                                   ;;;;pixel
+   mov goto_colTeam2,-1                                                                                                   ;;;;pixel
+   mov goto_row_gridTeam2,-1
+   mov goto_col_gridTeam2,-1
+
+
+   mov highlight_row,-1                                                                                                   ;;;;pixel
+   mov highlight_col,-1                                                                                                   ;;;;pixel
+   mov highlight_row_grid,-1
+   mov highlight_col_grid,-1
+
+   mov highlight_rowTeam2,-1                                                                                                   ;;;;pixel
+   mov highlight_colTeam2,-1                                                                                                   ;;;;pixel
+   mov highlight_row_gridTeam2,-1
+   mov highlight_col_gridTeam2,-1
+
+   mov di,offset highlight_row1
+   mov cx,64
+   highlight_loop:
+   mov al,'f'
+   mov [di],al
+   inc di
+   dec cx
+   jnz highlight_loop
+
+
+   mov di,offset time1
+   mov cx,256
+   time_loop:
+   mov al,0
+   mov [di],al
+   inc di
+   dec cx
+   jnz time_loop
+
+   mov di,offset grid_row1
+   mov [di],byte ptr'r'
+   inc di
+   mov [di],byte ptr'1'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+   mov [di],byte ptr'h'
+   inc di
+    mov [di],byte ptr'1'
+   inc di
+    mov [di],byte ptr'b'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+   mov [di],byte ptr'1'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+   mov [di],byte ptr'k'
+   inc di
+   mov [di],byte ptr'1'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+   mov [di],byte ptr'q'
+   inc di
+   mov [di],byte ptr'1'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+    mov [di],byte ptr'1'
+   inc di
+    mov [di],byte ptr'b'
+   inc di
+   mov [di],byte ptr'h'
+   inc di
+   mov [di],byte ptr'1'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+   mov [di],byte ptr'r'
+   inc di
+   mov [di],byte ptr'1'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   mov di,offset grid_row2
+   mov [di],byte ptr'p'
+    inc di
+    mov [di],byte ptr'1'
+    inc di
+    mov [di],byte ptr'b'
+    inc di
+   mov [di],byte ptr'p' 
+    inc di
+    mov [di],byte ptr'1' 
+    inc di
+    mov [di],byte ptr'w' 
+    inc di
+    mov [di],byte ptr'p'
+    inc di
+    mov [di],byte ptr'1'
+    inc di
+    mov [di],byte ptr'b'
+    inc di
+   mov [di],byte ptr'p' 
+    inc di
+    mov [di],byte ptr'1' 
+    inc di
+    mov [di],byte ptr'w' 
+    inc di
+    mov [di],byte ptr'p'
+    inc di
+    mov [di],byte ptr'1'
+    inc di
+    mov [di],byte ptr'b'
+    inc di
+   mov [di],byte ptr'p' 
+    inc di
+    mov [di],byte ptr'1' 
+    inc di
+    mov [di],byte ptr'w' 
+    inc di
+    mov [di],byte ptr'p'
+    inc di
+    mov [di],byte ptr'1'
+    inc di
+    mov [di],byte ptr'b'
+    inc di
+   mov [di],byte ptr'p' 
+    inc di
+    mov [di],byte ptr'1' 
+    inc di
+    mov [di],byte ptr'w' 
+    inc di
+   
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   mov di,offset grid_row3
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di], byte ptr'0'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   mov di,offset grid_row4
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte  ptr'b'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   mov di,offset grid_row5
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   mov di,offset grid_row6
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'0'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   mov di,offset grid_row7
+   mov [di],byte ptr'p'
+    inc di
+    mov [di],byte ptr'2'
+    inc di
+    mov [di],byte ptr'w'
+    inc di
+   mov [di],byte ptr'p' 
+    inc di
+    mov [di],byte ptr'2' 
+    inc di
+    mov [di],byte ptr'b' 
+    inc di
+    mov [di],byte ptr'p'
+    inc di
+    mov [di],byte ptr'2'
+    inc di
+    mov [di],byte ptr'w'
+    inc di
+   mov [di],byte ptr'p' 
+    inc di
+    mov [di],byte ptr'2' 
+    inc di
+    mov [di],byte ptr'b' 
+    inc di
+    mov [di],byte ptr'p'
+    inc di
+    mov [di],byte ptr'2'
+    inc di
+    mov [di],byte ptr'w'
+    inc di
+   mov [di],byte ptr'p' 
+    inc di
+    mov [di],byte ptr'2' 
+    inc di
+    mov [di],byte ptr'b' 
+    inc di
+    mov [di],byte ptr'p'
+    inc di
+    mov [di],byte ptr'2'
+    inc di
+    mov [di],byte ptr'w'
+    inc di
+   mov [di],byte ptr'p' 
+    inc di
+    mov [di],byte ptr'2'
+    inc di
+    mov [di],byte ptr'b' 
+    inc di
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+   mov di,offset grid_row8
+   mov [di],byte ptr'r'
+   inc di
+   mov [di],byte ptr'2'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+   mov [di],byte ptr'h'
+   inc di
+    mov [di],byte ptr'2'
+   inc di
+    mov [di],byte ptr'w'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+   mov [di],byte ptr'2'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+   mov [di],byte ptr'k'
+   inc di
+   mov [di],byte ptr'2'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+   mov [di],byte ptr'q'
+   inc di
+   mov [di],byte ptr'2'
+   inc di
+   mov [di],byte ptr 'b'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+    mov [di],byte ptr'2'
+   inc di
+    mov [di],byte ptr'w'
+   inc di
+   mov [di],byte ptr'h'
+   inc di
+   mov [di],byte ptr'2'
+   inc di
+   mov [di],byte ptr'b'
+   inc di
+   mov [di],byte ptr'r'
+   inc di
+   mov [di],byte ptr'2'
+   inc di
+   mov [di],byte ptr'w'
+   inc di
+   
+
+ret 
+reinitialize_data_segmant endp
+
+
+highlighted_cells_existing_team1 proc far
+
+mov di,offset highlight_row1
+mov cx,64
+
+loop_red:
+mov al,'r'
+cmp [di],al
+je  red_exit
+inc di
+dec cx
+jnz  loop_red
+
+red_exit:
+
+ret
+highlighted_cells_existing_team1 endp
+
+team2_highlighted_cells_existing proc far
+
+mov di,offset highlight_row1
+mov cx,64
+
+loop_purpel:
+mov al,'p'
+cmp [di],al
+je  purel_exit
+inc di
+dec cx
+jnz  loop_purpel
+
+purel_exit:
+
+ret
+team2_highlighted_cells_existing endp
 
 ; responsible for all the game logic
 main proc far
                                      mov                  ax,@data
                                      mov                  ds,ax
+                                     
 ; the start of the game menu  
-ClearScreen
+               ClearScreen
   ;set curser 1st column and first row
                MoveCursor        01h 01h
     ;display welcome message
@@ -5209,6 +5692,10 @@ ClearScreen
           CloseProgram
     rest:      
                                    ;  the start of the game logic
+                                    
+                                     mov                  ax,@data
+                                     mov                  ds,ax
+
                                      mov ah,2CH
                                      INT 21h  
                                     mov start_hour,ch
@@ -5227,6 +5714,7 @@ ClearScreen
                                     mov edx,0
                                    mov dl,start_second
                                    add start_time,edx
+
                                      ChgVideoMode
                                      mov                  ax,0A000H
                                      mov                  es,ax
@@ -5250,8 +5738,10 @@ ClearScreen
                                      mov                  pieceHeight,16
                                      mov                  pieceColor,0
                                      call                 far ptr Draw
+                                     
                                     call                 far ptr  mov_until_select
                                      mov                  ah,4ch
                                      int                  21h
 main endp
 end main
+
