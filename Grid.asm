@@ -5577,7 +5577,7 @@ reinitialize_data_segmant proc far
 ret 
 reinitialize_data_segmant endp
 
-
+; responsible for checking if there amy moving options for selected player1
 highlighted_cells_existing_team1 proc far
 
 mov di,offset highlight_row1
@@ -5595,7 +5595,7 @@ red_exit:
 
 ret
 highlighted_cells_existing_team1 endp
-
+; responsible for checking if there amy moving options for selected player2
 team2_highlighted_cells_existing proc far
 
 mov di,offset highlight_row1
