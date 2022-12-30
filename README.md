@@ -1,7 +1,6 @@
-# X86-Chess
 <h1 align='center'>Real Time Chess</h1>
 <div align='center'>
-   <img  src="/Images/logo.png"  >
+   <img  src="/Images/logo.jpeg"  >
  </div>
  <h2 align='center'> 🕮 Introduction & Background 🕮 </h2>
 <p align='justify'>
@@ -29,3 +28,31 @@ Two functions are to be implemented: chatting, and a two-player real-time chess 
   ♣️ Then type <b>link Grid.obj</b><br>
   ♥️ Now type <b>Grid</b>
 </p> 
+
+<!-- readme: collaborators -start -->
+<table  align='center'> 
+<tr>
+    <td align="center">
+        <a href="https://github.com/yousefosama654">
+            <img src="https://avatars.githubusercontent.com/u/93356614?v=4" width="100;" alt="yousefosama654"/>
+            <br />
+            <sub><b>Yousef</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/nesma-shafie">
+            <img src="https://avatars.githubusercontent.com/u/120175134?v=4" width="100;" alt="nesma-shafie"/>
+            <br />
+            <sub><b>Nesma</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/Sara-Gamal1">
+            <img src="https://avatars.githubusercontent.com/u/106556638?v=4" width="100;" alt="Sara-Gamal1"/>
+            <br />
+            <sub><b>Sara</b></sub>
+        </a>
+    </td></tr>
+</table>
+<!-- readme: collaborators -end -->
+<h2 align='center'>Thank You. 💖 </h2>
