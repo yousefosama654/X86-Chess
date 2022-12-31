@@ -167,6 +167,13 @@ include macros.inc
     invite_chatmsg          db      'wait for accept chat invitation','$'
     have_invite_chatmsg     db      'invitation  for chating','$'
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ;; Bonus pawn enhancement
+    pawnEnhancemessage      db      'F7 R,F8 Q,F9 B,F10 K,alt nothing','$'
+    pawnEnhanceChoise       db      0
+    noenhancement           db      'no enhancement                  ','$'
+    pawnEnhanceKey          db      0
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
     me                      db      "Me:",'$'
     You                     db      "You:",'$'
     dottedLine              db      80 dup('-'),'$'
@@ -626,7 +633,6 @@ move_pawn proc far
                                          jmp                     far ptr                  move_pawn_team2
     breakpoint1:                         jmp                     far ptr   move_pawn_exit
     move_pawn_team1:                     
-                                     
                                          mov                     dl,1                                                             ;;;;;;;;;row
                                          mov                     dh,0
                                          mov                     bx,selected_col
@@ -3140,6 +3146,20 @@ mov_until_select PROC far                                                       
                                          mov                     ah,1
                                          int                     16h
                                          jz                      recieveSendMove
+    ;; the alt for nothing
+                                         cmp                     pawnEnhanceChoise,0
+                                         je                      restofkeyboardSend
+                                         cmp                     ah,63
+                                         jne                     restofkeyboardSend
+                                         mov                     pawnEnhanceKey,63
+                                         PrintMsg                noenhancement
+                                         mov                     ah, 0
+                                         int                     16h
+                                         mov                     dx , 3F8H
+                                         mov                     al,pawnEnhanceKey
+                                         out                     dx , al
+                                         jmp                     recieveSendMove
+    restofkeyboardSend:                  
                                          cmp                     ah,75
                                          je                      leftsend
                                          cmp                     ah,72
@@ -3221,7 +3241,16 @@ mov_until_select PROC far                                                       
                                          mov                     dx , 3FDH                                                        ; Line Status Register
                                          in                      al , dx
                                          and                     al , 1
-                                         JZ                      waitForKeySendMove                                               ;Not empty
+                                         JZ                      waitForKeySendMove
+    ;; the alt for nothing
+                                         cmp                     pawnEnhanceChoise,0
+                                         je                      restofkeyboardrecieve
+                                         cmp                     al,63
+                                         jne                     restofkeyboardrecieve
+                                         PrintMsg                noenhancement
+                                         mov                     pawnEnhanceChoise,0
+                                         jmp                     waitForKeySendMove
+    restofkeyboardrecieve:                                                                                                        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;                                           ;Not empty
                                          mov                     dx , 03F8H                                                       ;there ia data and i ama recieveing
                                          in                      al , dx
                                          cmp                     al,75
@@ -3285,7 +3314,7 @@ mov_until_select PROC far                                                       
                                          ret
 mov_until_select ENDP
 
-    ;     ; responsible for moving a piece after determine it for team2
+    ;    responsible for moving a piece after determine it for team1
 move_piece proc far
                                          mov                     al,goto_row_grid
                                          dec                     al
@@ -3298,9 +3327,11 @@ move_piece proc far
                                          mov                     di ,offset highlight_row1
                                          add                     di,ax
                                          mov                     cl,[di]
+    ;; red to the first team
                                          mov                     al,'r'
                                          cmp                     cl,al
                                          jne                     move_piece_breakpoint1
+    ; not highlighted
                                          mov                     al,'f'
                                          mov                     [di],al
                                          mov                     al,selected_col_grid
@@ -3320,9 +3351,7 @@ move_piece proc far
                                          add                     di,cx
 
                                          mov                     cl,[di]                                                          ;;;;;piece
-
                                          mov                     ch,[di]+1                                                        ;;;team color
-    ;  push                 cx
                                          mov                     bp,cx
                                          mov                     al,'0'
                                          mov                     [di],al
@@ -3330,7 +3359,6 @@ move_piece proc far
                                          mov                     al,'0'
                                          mov                     [di],al
                                          jmp                     move_piece_breakpoint18
-             
     move_piece_breakpoint1:              jmp                     far ptr move_piece_breakpoint2
     move_piece_breakpoint18:             
                                          mov                     ax,selected_col
@@ -3347,8 +3375,6 @@ move_piece proc far
                                          mov                     current_row_grid,al
                                          mov                     al,0
                                          call                    far ptr HIGHLIGHT_selected
-
-                             
                                          mov                     al,goto_col_grid
                                          dec                     al
                                          mov                     bl,3
@@ -3364,7 +3390,6 @@ move_piece proc far
                                          add                     si,cx
                                          mov                     al,[si]+1
                                          call                    far ptr print_removed_team1
-    ;  pop                  cx
                                          mov                     cx,bp
                                          jmp                     move_piece_breakpoint19
     move_piece_breakpoint2:              jmp                     far ptr move_piece_exit
@@ -3375,8 +3400,10 @@ move_piece proc far
                                          mov                     al,[si]+1
                                          mov                     game_over_flag_team,al
     con_con:                             
+    ;;; the cl contains the name of moved piece
                                          mov                     [si],cl
                                          mov                     [si]+1,ch
+                                         push                    cx
                                          mov                     ax,goto_col
                                          mov                     column,ax
                                          mov                     ax, goto_row
@@ -3430,9 +3457,25 @@ move_piece proc far
                                          mov                     si,ax
                                          add                     si,cx
                                          mov                     [si],edx
-    ;;;;
-    ;;;;
-
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;code of the bonus;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                                         pop                     cx
+                                         cmp                     cl,'p'
+                                         jne                     move_piece_exit
+                                         cmp                     goto_row_grid,8
+                                         jne                     move_piece_exit
+                                         mov                     ah,2
+                                         mov                     dx,51825
+                                         mov                     bh,0
+                                         int                     10h
+                                         PrintMsg                pawnEnhancemessage
+                                         mov                     pawnEnhanceChoise,1
+                                         mov                     selected_col,-1
+                                         mov                     selected_row,-1
+                                         mov                     selected_row_grid,-1
+                                         mov                     selected_col_grid,-1
+                                         call                    far ptr  Dehighlight_Grid
+                                         call                    far ptr mov_until_select
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;code of the bonus;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     move_piece_exit:                     
                                          mov                     selected_col,-1
                                          mov                     selected_row,-1
