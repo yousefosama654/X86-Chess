@@ -302,3 +302,89 @@ after_clear_bottom_Graphic macro
 endm
 
 
+
+MY_border MACRO startrow,startcol
+                                     local                right1
+                                     local                right
+                                      local                right2
+                                     local                right3
+                                     local               square1
+                                     local               square
+                                      local                square2
+                                     local                square3
+                                      mov                  si,4
+                           square:             mov                  cx,startcol                                                 ;Column //x
+                                     mov                  dx,startrow                                                 ;Row //
+                                     mov                  al,01h      ;;;e    ;;;;;c                                            ;Pixel color
+                                     mov                  ah,0ch                                                      ;Draw Pixel Command
+                                    
+
+                      
+   right:                            int                  10h
+                                     inc                  cx
+                                     mov                  bx,0
+                                     add                  bx,30
+                                     add                  bx,startcol
+                                     cmp                  cx,bx
+                                     jnz                  right 
+                                   dec si
+                                   jnz  square
+   mov si,4
+                         square1:     
+                                  mov                cx,startcol                                                 ;Column //x
+                                     mov                  dx,startrow                                                 ;Row //
+                                     mov                  al,01h      ;;;e    ;;;;;c                                            ;Pixel color
+                                     mov                  ah,0ch                                                      ;Draw Pixel Command
+                                    
+                                     add dx,22
+                                  
+                                  
+                                      right1:                            int                  10h
+                                     inc                  cx
+                                     mov                  bx,0
+                                     add                  bx,30
+                                     add                  bx,startcol
+                                     cmp                  cx,bx
+                                     jnz                  right1 
+                                       dec si
+                                       jnz square1                                                    ; this will draw a line of 25 length
+                                       mov si,4
+                                       square2:
+                                      mov                cx,startcol                                                 ;Column //x
+                                     mov                  dx,startrow                                                 ;Row //
+                                     mov                  al,01h      ;;;e    ;;;;;c                                            ;Pixel color
+                                     mov                  ah,0ch                                                      ;Draw Pixel Command
+                                 
+                                    
+                                     
+                                      right2:                         
+                                     int                  10h
+                                     inc                  dx
+                                     mov                  bx,0
+                                     add                  bx,23
+                                     add                  bx,startrow
+                                     cmp                  dx,bx
+                                     jnz                  right2 
+                                     dec si
+                                     jnz square2
+                                     mov si,4
+                                     square3: 
+
+                                       mov                cx,startcol                                                 ;Column //x
+                                     mov                  dx,startrow                                                 ;Row //
+                                     mov                  al,01h      ;;;e    ;;;;;c                                            ;Pixel color
+                                     mov                  ah,0ch                                                      ;Draw Pixel Command
+                                   
+                                     add cx,29 
+                                     right3:                         
+                                     int                  10h
+                                     inc                  dx
+                                     mov                  bx,0
+                                     add                  bx,23
+                                     add                  bx,startrow
+                                     cmp                  dx,bx
+                                     jnz                  right3  
+                                     dec si
+                                     jnz square3 
+                                    
+endm

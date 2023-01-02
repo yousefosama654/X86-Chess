@@ -126,6 +126,16 @@ include macros.inc
     msg_checkmate2          db      "checkmate team2         ",'$'
 
 
+    frozen_row1          db      'f', 'f', 'f', 'f', 'f', 'f', 'f','f'
+    frozen_row2          db      'f', 'f', 'f', 'f', 'f', 'f', 'f','f'
+    frozen_row3          db      'f', 'f', 'f', 'f', 'f', 'f', 'f','f'
+    frozen_row4          db      'f', 'f', 'f', 'f', 'f', 'f', 'f','f'
+    frozen_row5          db      'f', 'f', 'f', 'f', 'f', 'f', 'f','f'
+    frozen_row6          db      'f', 'f', 'f', 'f', 'f', 'f', 'f','f'
+    frozen_row7          db      'f', 'f', 'f', 'f', 'f', 'f', 'f','f'
+    frozen_row8          db      'f', 'f', 'f', 'f', 'f', 'f', 'f','f'
+
+
     time1                   dd      0, 0, 0, 0, 0, 0, 0,0
     time2                   dd      0, 0, 0, 0, 0, 0, 0,0
     time3                   dd      0, 0, 0, 0, 0, 0, 0,0
@@ -152,6 +162,7 @@ include macros.inc
     menter                  db      "Plaese press enter to continue ",'$'
     name1                   db      15 ,?,15 dup('$')
     name2                   db      15 ,?,15 dup('$')
+    welcome_msg             db      "   you play with ",'$'
     mf1                     db      "To start chatting press F1 ",10,13,'$'
     mf2                     db      "To start Game press F2 ",10,13,'$'
     mesc                    db      "To end the program press ESC",10,13,'$'
@@ -167,13 +178,6 @@ include macros.inc
     invite_chatmsg          db      'wait for accept chat invitation','$'
     have_invite_chatmsg     db      'invitation  for chating','$'
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-    ;; Bonus pawn enhancement
-    pawnEnhancemessage      db      'F7 R,F8 Q,F9 B,F10 K,alt nothing','$'
-    pawnEnhanceChoise       db      0
-    noenhancement           db      'no enhancement                  ','$'
-    pawnEnhanceKey          db      0
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
     me                      db      "Me:",'$'
     You                     db      "You:",'$'
     dottedLine              db      80 dup('-'),'$'
@@ -192,10 +196,26 @@ include macros.inc
     dummysent               db      ?
     dummyrecieve            db      ?
 
+    pawnEnhancemessage      db      'F7 K,F8 B,F9 Q,F10 R            ','$'
+    f7key                   db      'choosed f7 for knight           ','$'
+    f8key                   db      'choosed f8 for bishop           ','$'
+    f9key                   db      'choosed f9 for queen            ','$'
+    f10key                  db      'choosed f10 for rook            ','$'
+    pawnchoiceEnhancment    db      -1
+    noenhancement           db      'no enhancement                  ','$'
+    currentpiece            db      0
+    piece_number            db 0
+    time_to_compaire        dd  0
     ;;;;;h->horse  q->queen   p->pawn   k->king   b->Bishop   r->rook   1->green->team1   2->black->team2  00->no_piece w-b--->white-black
     ;;;;rook--horse--Bishop--king---queen--Bishop--horse--rook      8pawn
     ; current_pos dw 00,90
     ; (row*8)+col
+
+
+
+
+
+
 .code
     ; responsible for drawing the full Grid
 DrawGrid proc far
@@ -633,6 +653,7 @@ move_pawn proc far
                                          jmp                     far ptr                  move_pawn_team2
     breakpoint1:                         jmp                     far ptr   move_pawn_exit
     move_pawn_team1:                     
+                                     
                                          mov                     dl,1                                                             ;;;;;;;;;row
                                          mov                     dh,0
                                          mov                     bx,selected_col
@@ -688,6 +709,8 @@ move_pawn proc far
                                          add                     highlight_row,bx
                                          mov                     bx,30
                                          add                     highlight_col,bx
+                                         cmp                     highlight_col,240
+                                         je                      move_pawn_team1_b2
     ;  jmp                  far ptr                  move_pawn_change
                                          mov                     di,offset grid_row1
                                          mov                     ax,0
@@ -1779,6 +1802,8 @@ movepawnTeam2 proc far
                                          add                     highlight_rowTeam2,bx
                                          mov                     bx,30
                                          add                     highlight_colTeam2,bx
+                                         cmp                     highlight_colTeam2,240
+                                         je                      movepawnTeam2_move_pawn_exit
     ;  jmp                  far ptr                  move_pawn_change
                                          mov                     di,offset grid_row1
                                          mov                     ax,0
@@ -3136,6 +3161,8 @@ ClearInlineBottom ENDP
 mov_until_select PROC far                                                                                                         ; this proc will send the arr byte by byte
     waitForKeySendMove:                  
                                          call                    far ptr  game_time
+                                        ;   call far ptr           free_piece
+                                          call far ptr freeze_piece
                                          mov                     dx , 3FDH                                                        ; Line Status Register
                                          In                      al , dx                                                          ;Read Line Status
                                          and                     al , 00100000b
@@ -3146,20 +3173,6 @@ mov_until_select PROC far                                                       
                                          mov                     ah,1
                                          int                     16h
                                          jz                      recieveSendMove
-    ;; the alt for nothing
-                                         cmp                     pawnEnhanceChoise,0
-                                         je                      restofkeyboardSend
-                                         cmp                     ah,63
-                                         jne                     restofkeyboardSend
-                                         mov                     pawnEnhanceKey,63
-                                         PrintMsg                noenhancement
-                                         mov                     ah, 0
-                                         int                     16h
-                                         mov                     dx , 3F8H
-                                         mov                     al,pawnEnhanceKey
-                                         out                     dx , al
-                                         jmp                     recieveSendMove
-    restofkeyboardSend:                  
                                          cmp                     ah,75
                                          je                      leftsend
                                          cmp                     ah,72
@@ -3241,16 +3254,7 @@ mov_until_select PROC far                                                       
                                          mov                     dx , 3FDH                                                        ; Line Status Register
                                          in                      al , dx
                                          and                     al , 1
-                                         JZ                      waitForKeySendMove
-    ;; the alt for nothing
-                                         cmp                     pawnEnhanceChoise,0
-                                         je                      restofkeyboardrecieve
-                                         cmp                     al,63
-                                         jne                     restofkeyboardrecieve
-                                         PrintMsg                noenhancement
-                                         mov                     pawnEnhanceChoise,0
-                                         jmp                     waitForKeySendMove
-    restofkeyboardrecieve:                                                                                                        ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;                                           ;Not empty
+                                         JZ                      waitForKeySendMove                                               ;Not empty
                                          mov                     dx , 03F8H                                                       ;there ia data and i ama recieveing
                                          in                      al , dx
                                          cmp                     al,75
@@ -3314,7 +3318,7 @@ mov_until_select PROC far                                                       
                                          ret
 mov_until_select ENDP
 
-    ;    responsible for moving a piece after determine it for team1
+    ;     ; responsible for moving a piece after determine it for team2
 move_piece proc far
                                          mov                     al,goto_row_grid
                                          dec                     al
@@ -3327,11 +3331,10 @@ move_piece proc far
                                          mov                     di ,offset highlight_row1
                                          add                     di,ax
                                          mov                     cl,[di]
-    ;; red to the first team
+                                         
                                          mov                     al,'r'
                                          cmp                     cl,al
                                          jne                     move_piece_breakpoint1
-    ; not highlighted
                                          mov                     al,'f'
                                          mov                     [di],al
                                          mov                     al,selected_col_grid
@@ -3339,8 +3342,6 @@ move_piece proc far
                                          mov                     bl,3
                                          mul                     bl
                                          mov                     cx,ax
-
-
                                          mov                     al,selected_row_grid
                                          dec                     al
                                          mov                     ah,0
@@ -3351,6 +3352,7 @@ move_piece proc far
                                          add                     di,cx
 
                                          mov                     cl,[di]                                                          ;;;;;piece
+                                         mov                     currentpiece,cl
                                          mov                     ch,[di]+1                                                        ;;;team color
                                          mov                     bp,cx
                                          mov                     al,'0'
@@ -3359,6 +3361,7 @@ move_piece proc far
                                          mov                     al,'0'
                                          mov                     [di],al
                                          jmp                     move_piece_breakpoint18
+             
     move_piece_breakpoint1:              jmp                     far ptr move_piece_breakpoint2
     move_piece_breakpoint18:             
                                          mov                     ax,selected_col
@@ -3375,6 +3378,8 @@ move_piece proc far
                                          mov                     current_row_grid,al
                                          mov                     al,0
                                          call                    far ptr HIGHLIGHT_selected
+
+                             
                                          mov                     al,goto_col_grid
                                          dec                     al
                                          mov                     bl,3
@@ -3400,10 +3405,9 @@ move_piece proc far
                                          mov                     al,[si]+1
                                          mov                     game_over_flag_team,al
     con_con:                             
-    ;;; the cl contains the name of moved piece
+                                         
                                          mov                     [si],cl
                                          mov                     [si]+1,ch
-                                         push                    cx
                                          mov                     ax,goto_col
                                          mov                     column,ax
                                          mov                     ax, goto_row
@@ -3416,8 +3420,20 @@ move_piece proc far
                                          mov                     current_col_grid,al
                                          mov                     al,goto_row_grid
                                          mov                     current_row_grid,al
+                                        
 
-                                    
+                                          mov                     al,goto_row_grid
+                                         dec                     al
+                                         mov                     bl,8
+                                         mul                     bl
+                                         mov                     bl,goto_col_grid
+                                         mov                     bh,0
+                                         dec                     bl
+                                         add                     ax,bx
+                                         mov                     di ,offset frozen_row1
+                                         add                     di,ax
+                                         mov                     al ,'t'
+                                         mov                     [di],al
                                          mov                     al,1
                                          call                    far ptr HIGHLIGHT_selected
 
@@ -3442,7 +3458,7 @@ move_piece proc far
                                          add                     ecx,edx
                                          mov                     edx,ecx
 
-                                  
+
                                          mov                     al,goto_col_grid
                                          dec                     al
                                          mov                     bl,4
@@ -3458,23 +3474,195 @@ move_piece proc far
                                          add                     si,cx
                                          mov                     [si],edx
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;code of the bonus;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                                         pop                     cx
+                                         mov                     cl,currentpiece
                                          cmp                     cl,'p'
                                          jne                     move_piece_exit
-                                         cmp                     goto_row_grid,8
+                                         mov                     al ,8
+                                         cmp                     goto_row_grid,al
                                          jne                     move_piece_exit
                                          mov                     ah,2
                                          mov                     dx,51825
                                          mov                     bh,0
                                          int                     10h
                                          PrintMsg                pawnEnhancemessage
-                                         mov                     pawnEnhanceChoise,1
-                                         mov                     selected_col,-1
-                                         mov                     selected_row,-1
-                                         mov                     selected_row_grid,-1
-                                         mov                     selected_col_grid,-1
                                          call                    far ptr  Dehighlight_Grid
-                                         call                    far ptr mov_until_select
+    pawn_sending:                        
+
+                                         cmp                     my_team,1
+                                         jnz                     recievepawn
+                                         mov                     dx , 3FDH
+                                         In                      al , dx
+                                         and                     al , 00100000b
+                                         jz                      recieveready
+                                         jnz                     sendready
+    recieveready:                        
+                                         Jmp                     FAR ptr      pawn_sending
+    sendready:                           
+                                         mov                     ah,1
+                                         int                     16h
+                                         mov                     pawnchoiceEnhancment,ah
+                                         jz                      JmpToRecieve
+                                         jnz                     sendpawn
+    JmpToRecieve:                        
+                                         Jmp                     FAR ptr      pawn_sending
+    sendpawn:                            
+                                         mov                     ah, 0
+                                         int                     16h
+                                         mov                     dx , 3F8H
+                                         mov                     al,pawnchoiceEnhancment
+                                         out                     dx , al
+                                         jmp                     far ptr ExitLogicEnhancement
+    recievepawn:                         
+                                         mov                     dx , 3FDH
+                                         in                      al , dx
+                                         and                     al , 1
+                                         JZ                      pawnexit
+                                         mov                     dx , 03F8H
+                                         in                      al , dx
+                                         mov                     pawnchoiceEnhancment,al
+                                         jmp                     far ptr ExitLogicEnhancement
+    pawnexit:                            
+                                         jmp                     pawn_sending
+    ExitLogicEnhancement:                
+                                         mov                     ah,2
+                                         mov                     dx,51825
+                                         mov                     bh,0
+                                         int                     10h
+    ;f7
+                                         cmp                     al,65
+                                         jz                      F7KeyPressed
+    ;f8
+                                         cmp                     al,66
+                                         jz                      F8KeyPressed
+    ;f9
+                                         cmp                     al,67
+                                         jz                      F9KeyPressed
+    ;f10
+                                         cmp                     al,68
+                                         jz                      F10KeyPressed
+                                         PrintMsg                noenhancement
+                                         jmp                     far ptr move_piece_exit
+    F7KeyPressed:                        
+                                         MY_HIGHLIGHT_Rec        goto_row,goto_col
+                                         mov                     cx,goto_row
+                                         mov                     startRow,cx
+                                         mov                     cx,goto_col
+                                         add                     cx,6
+                                         mov                     startCol,cx
+                                         lea                     bx,knight
+                                         mov                     piece,bx
+                                         mov                     pieceWidth,20
+                                         mov                     pieceHeight,20
+                                         mov                     pieceColor,3
+                                         call                    far ptr Draw
+                                         mov                     al,goto_col_grid
+                                         dec                     al
+                                         mov                     bl,3
+                                         mul                     bl
+                                         mov                     cx,ax
+                                         mov                     al,goto_row_grid
+                                         dec                     al
+                                         mov                     ah,0
+                                         mov                     bl,24
+                                         mul                     bl
+                                         add                     ax,offset grid_row1
+                                         mov                     si,ax
+                                         add                     si,cx
+                                         mov                     al,'h'
+                                         mov                     [si],al
+                                        
+                                         PrintMsg                f7key
+                                         jmp                     far ptr move_piece_exit
+    F8KeyPressed:                        
+
+                                         MY_HIGHLIGHT_Rec        goto_row,goto_col
+                                         mov                     cx,goto_row
+                                         mov                     startRow,cx
+                                         mov                     cx,goto_col
+                                         add                     cx,6
+                                         mov                     startCol,cx
+                                         lea                     bx,bishop
+                                         mov                     piece,bx
+                                         mov                     pieceWidth,17
+                                         mov                     pieceHeight,16
+                                         mov                     pieceColor,3
+                                         call                    far ptr Draw
+                                         mov                     al,goto_col_grid
+                                         dec                     al
+                                         mov                     bl,3
+                                         mul                     bl
+                                         mov                     cx,ax
+                                         mov                     al,goto_row_grid
+                                         dec                     al
+                                         mov                     ah,0
+                                         mov                     bl,24
+                                         mul                     bl
+                                         add                     ax,offset grid_row1
+                                         mov                     si,ax
+                                         add                     si,cx
+                                         mov                     al,'b'
+                                         mov                     [si],al
+                                         PrintMsg                f8key
+                                         jmp                     far ptr move_piece_exit
+    F9KeyPressed:                        
+                                         MY_HIGHLIGHT_Rec        goto_row,goto_col
+                                         mov                     cx,goto_row
+                                         mov                     startRow,cx
+                                         mov                     cx,goto_col
+                                         add                     cx,6
+                                         mov                     startCol,cx
+                                         lea                     bx,queen
+                                         mov                     piece,bx
+                                         mov                     pieceWidth,13
+                                         mov                     pieceHeight,16
+                                         mov                     pieceColor,3
+                                         call                    far ptr Draw
+                                         mov                     al,goto_col_grid
+                                         dec                     al
+                                         mov                     bl,3
+                                         mul                     bl
+                                         mov                     cx,ax
+                                         mov                     al,goto_row_grid
+                                         dec                     al
+                                         mov                     ah,0
+                                         mov                     bl,24
+                                         mul                     bl
+                                         add                     ax,offset grid_row1
+                                         mov                     si,ax
+                                         add                     si,cx
+                                         mov                     al,'q'
+                                         mov                     [si],al
+                                         PrintMsg                f9key
+                                         jmp                     far ptr move_piece_exit
+    F10KeyPressed:                       
+                                         MY_HIGHLIGHT_Rec        goto_row,goto_col
+                                         mov                     cx,goto_row
+                                         mov                     startRow,cx
+                                         mov                     cx,goto_col
+                                         add                     cx,6
+                                         mov                     startCol,cx
+                                         lea                     bx,rook
+                                         mov                     piece,bx
+                                         mov                     pieceWidth,16
+                                         mov                     pieceHeight,16
+                                         mov                     pieceColor,3
+                                         call                    far ptr Draw
+                                         mov                     al,goto_col_grid
+                                         dec                     al
+                                         mov                     bl,3
+                                         mul                     bl
+                                         mov                     cx,ax
+                                         mov                     al,goto_row_grid
+                                         dec                     al
+                                         mov                     ah,0
+                                         mov                     bl,24
+                                         mul                     bl
+                                         add                     ax,offset grid_row1
+                                         mov                     si,ax
+                                         add                     si,cx
+                                         mov                     al,'r'
+                                         mov                     [si],al
+                                         PrintMsg                f10key
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;code of the bonus;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     move_piece_exit:                     
                                          mov                     selected_col,-1
@@ -3482,7 +3670,6 @@ move_piece proc far
                                          mov                     selected_row_grid,-1
                                          mov                     selected_col_grid,-1
                                          call                    far ptr  Dehighlight_Grid
-                    
                                          ret
 move_piece endp
     ;responsible for highlighting seleceted cell for team1
@@ -3580,6 +3767,29 @@ HIGHLIGHT_selected proc far
 
 
     HIGHLIGHT_selected_to_team_color:    
+
+
+                                         mov                     al,current_row_grid
+                                         dec                     al
+                                         mov                     bl,8
+                                         mul                     bl
+                                         mov                     bl,current_col_grid
+                                         mov                     bh,0
+                                         dec                     bl
+                                         add                     ax,bx
+                                         mov                     di ,offset frozen_row1
+                                         add                     di,ax
+                                         mov                     al ,'f'
+                                         cmp                     [di],al
+
+                                         je  not_frozen
+                                         MY_border  current_row,current_col
+
+
+           not_frozen:   
+
+
+
                                          mov                     al,current_col_grid
                                          dec                     al
                                          mov                     bl,3
@@ -3866,6 +4076,25 @@ HIGHLIGHTSelectedTeam2 proc far
 
 
     team2_to_team_color:                 
+                                          mov                     al,current_row_gridTeam2
+                                         dec                     al
+                                         mov                     bl,8
+                                         mul                     bl
+                                         mov                     bl,current_col_gridTeam2
+                                         mov                     bh,0
+                                         dec                     bl
+                                         add                     ax,bx
+                                         mov                     di ,offset frozen_row1
+                                         add                     di,ax
+                                         mov                     al ,'f'
+                                         cmp                     [di],al
+
+                                         je  notfrozen2
+                                         MY_border  current_rowTeam2,current_colTeam2
+
+
+           notfrozen2:   
+
                                          mov                     al,current_col_gridTeam2
                                          dec                     al
                                          mov                     bl,3
@@ -4894,7 +5123,6 @@ Dehighlight_Grid_team2 proc far
 Dehighlight_Grid_team2 endp
     ; responsible for moving a piece after determine it for team2
 move_piecet2 proc far
-                    
                                          mov                     al,goto_row_gridTeam2
                                          dec                     al
                                          mov                     bl,8
@@ -4906,6 +5134,7 @@ move_piecet2 proc far
                                          mov                     di ,offset highlight_row1
                                          add                     di,ax
                                          mov                     cl,[di]
+                                       
                                          mov                     al,'p'
                                          cmp                     cl,al
                                          jne                     breakpoint111
@@ -4928,9 +5157,8 @@ move_piecet2 proc far
                                          add                     di,cx
 
                                          mov                     cl,[di]                                                          ;;;;;piece
-
+                                         mov                     currentpiece,cl
                                          mov                     ch,[di]+1                                                        ;;;team color
-    ;  push                 cx
                                          mov                     bp,cx
                                          mov                     al,'0'
                                          mov                     [di],al
@@ -4984,6 +5212,7 @@ move_piecet2 proc far
                                          mov                     al,[si]+1
                                          mov                     game_over_flag_team,al
     con_con11:                           
+                                         
                                          mov                     [si],cl
                                          mov                     [si]+1,ch
                                          mov                     ax,goto_colTeam2
@@ -4999,10 +5228,22 @@ move_piecet2 proc far
                                          mov                     al,goto_row_gridTeam2
                                          mov                     current_row_gridTeam2,al
 
-                                         mov                     ax,goto_colTeam2
-                                         mov                     column,ax
-                                         mov                     ax, goto_rowTeam2
-                                         mov                     row,ax
+                                        
+
+
+
+                                        mov                     al,goto_row_gridTeam2
+                                         dec                     al
+                                         mov                     bl,8
+                                         mul                     bl
+                                         mov                     bl,goto_col_gridTeam2
+                                         mov                     bh,0
+                                         dec                     bl
+                                         add                     ax,bx
+                                         mov                     di ,offset frozen_row1
+                                         add                     di,ax
+                                         mov                     al ,'t'
+                                         mov                     [di],al
                                          mov                     al,1
                                          call                    far ptr HIGHLIGHTSelectedTeam2
 
@@ -5043,20 +5284,201 @@ move_piecet2 proc far
                                          mov                     si,ax
                                          add                     si,cx
                                          mov                     [si],edx
-
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;code of the bonus;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                                         mov                     cl,currentpiece
+                                         cmp                     cl,'p'
+                                         jne                     exit12
+                                         cmp                     goto_row_gridTeam2,1
+                                         jne                     exit12
+                                         mov                     ah,2
+                                         mov                     dx,51825
+                                         mov                     bh,0
+                                         int                     10h
+                                         PrintMsg                pawnEnhancemessage
+                                         call                    far ptr  Dehighlight_Grid_team2
+    pawn_sendingT2:                      
+                                         cmp                     my_team,2
+                                         jnz                     recievepawnT2
+                                         mov                     dx , 3FDH                                                        ; Line Status Register
+                                         In                      al , dx                                                          ;Read Line Status
+                                         and                     al , 00100000b
+                                         jz                      recievereadyT2
+                                         jnz                     sendreadyT2
+    recievereadyT2:                      
+                                         Jmp                     FAR ptr      pawn_sendingT2
+    sendreadyT2:                         
+                                         mov                     ah,1
+                                         int                     16h
+                                         mov                     pawnchoiceEnhancment,ah
+                                         jz                      JmpToRecieveT2
+                                         jnz                     sendpawnT2
+    JmpToRecieveT2:                      
+                                         Jmp                     FAR ptr      pawn_sendingT2
+    sendpawnT2:                          
+                                         mov                     ah, 0
+                                         int                     16h
+                                         mov                     dx , 3F8H
+                                         mov                     al,pawnchoiceEnhancment
+                                         out                     dx , al
+                                         jmp                     far ptr ExitLogicEnhancementT2
+    recievepawnT2:                       
+                                         mov                     dx , 3FDH
+                                         in                      al , dx
+                                         and                     al , 1
+                                         JZ                      pawnexitT2
+                                         mov                     dx , 03F8H
+                                         in                      al , dx
+                                         mov                     pawnchoiceEnhancment,al
+                                         jmp                     far ptr ExitLogicEnhancementT2
+    pawnexitT2:                          
+                                         jmp                     pawn_sendingT2
+    ExitLogicEnhancementT2:              
+                                         mov                     ah,2
+                                         mov                     dx,51825
+                                         mov                     bh,0
+                                         int                     10h
+    ;f7
+                                         cmp                     al,65
+                                         jz                      F7KeyPressedT2
+    ;f8
+                                         cmp                     al,66
+                                         jz                      F8KeyPressedT2
+    ;f9
+                                         cmp                     al,67
+                                         jz                      F9KeyPressedT2
+    ;f10
+                                         cmp                     al,68
+                                         jz                      F10KeyPressedT2
+                                         PrintMsg                noenhancement
+                                         jmp                     far ptr exit12
+    F7KeyPressedT2:                      
+                                         MY_HIGHLIGHT_Rec_level2 goto_rowTeam2,goto_colTeam2
+                                         mov                     cx,goto_rowTeam2
+                                         mov                     startRow,cx
+                                         mov                     cx,goto_colTeam2
+                                         add                     cx,6
+                                         mov                     startCol,cx
+                                         lea                     bx,knight
+                                         mov                     piece,bx
+                                         mov                     pieceWidth,20
+                                         mov                     pieceHeight,20
+                                         mov                     pieceColor,0
+                                         call                    far ptr Draw
+                                         mov                     al,goto_col_gridTeam2
+                                         dec                     al
+                                         mov                     bl,3
+                                         mul                     bl
+                                         mov                     cx,ax
+                                         mov                     al,goto_row_gridTeam2
+                                         dec                     al
+                                         mov                     ah,0
+                                         mov                     bl,24
+                                         mul                     bl
+                                         add                     ax,offset grid_row1
+                                         mov                     si,ax
+                                         add                     si,cx
+                                         mov                     al,'h'
+                                         mov                     [si],al
+                                         PrintMsg                f7key
+                                         jmp                     far ptr exit12
+    F8KeyPressedT2:                      
+                                         MY_HIGHLIGHT_Rec_level2 goto_rowTeam2,goto_colTeam2
+                                         mov                     cx,goto_rowTeam2
+                                         mov                     startRow,cx
+                                         mov                     cx,goto_colTeam2
+                                         add                     cx,6
+                                         mov                     startCol,cx
+                                         lea                     bx,bishop
+                                         mov                     piece,bx
+                                         mov                     pieceWidth,17
+                                         mov                     pieceHeight,16
+                                         mov                     pieceColor,0
+                                         call                    far ptr Draw
+                                         mov                     al,goto_col_gridTeam2
+                                         dec                     al
+                                         mov                     bl,3
+                                         mul                     bl
+                                         mov                     cx,ax
+                                         mov                     al,goto_row_gridTeam2
+                                         dec                     al
+                                         mov                     ah,0
+                                         mov                     bl,24
+                                         mul                     bl
+                                         add                     ax,offset grid_row1
+                                         mov                     si,ax
+                                         add                     si,cx
+                                         mov                     al,'b'
+                                         mov                     [si],al
+                                         PrintMsg                f8key
+                                         jmp                     far ptr exit12
+    F9KeyPressedT2:                      
+                                         MY_HIGHLIGHT_Rec_level2 goto_rowTeam2,goto_colTeam2
+                                         mov                     cx,goto_rowTeam2
+                                         mov                     startRow,cx
+                                         mov                     cx,goto_colTeam2
+                                         add                     cx,6
+                                         mov                     startCol,cx
+                                         lea                     bx,queen
+                                         mov                     piece,bx
+                                         mov                     pieceWidth,13
+                                         mov                     pieceHeight,16
+                                         mov                     pieceColor,0
+                                         call                    far ptr Draw
+                                         mov                     al,goto_col_gridTeam2
+                                         dec                     al
+                                         mov                     bl,3
+                                         mul                     bl
+                                         mov                     cx,ax
+                                         mov                     al,goto_row_gridTeam2
+                                         dec                     al
+                                         mov                     ah,0
+                                         mov                     bl,24
+                                         mul                     bl
+                                         add                     ax,offset grid_row1
+                                         mov                     si,ax
+                                         add                     si,cx
+                                         mov                     al,'q'
+                                         mov                     [si],al
+                                         PrintMsg                f9key
+                                         jmp                     far ptr exit12
+    F10KeyPressedT2:                     
+                                         MY_HIGHLIGHT_Rec_level2 goto_rowTeam2,goto_colTeam2
+                                         mov                     cx,goto_rowTeam2
+                                         mov                     startRow,cx
+                                         mov                     cx,goto_colTeam2
+                                         add                     cx,6
+                                         mov                     startCol,cx
+                                         lea                     bx,rook
+                                         mov                     piece,bx
+                                         mov                     pieceWidth,16
+                                         mov                     pieceHeight,16
+                                         mov                     pieceColor,0
+                                         call                    far ptr Draw
+                                         mov                     al,goto_col_gridTeam2
+                                         dec                     al
+                                         mov                     bl,3
+                                         mul                     bl
+                                         mov                     cx,ax
+                                         mov                     al,goto_row_gridTeam2
+                                         dec                     al
+                                         mov                     ah,0
+                                         mov                     bl,24
+                                         mul                     bl
+                                         add                     ax,offset grid_row1
+                                         mov                     si,ax
+                                         add                     si,cx
+                                         mov                     al,'r'
+                                         mov                     [si],al
+                                         PrintMsg                f10key
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;code of the bonus;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     exit12:                              
                                          mov                     selected_colTeam2,-1
                                          mov                     selected_rowTeam2,-1
                                          mov                     selected_row_gridTeam2,-1
                                          mov                     selected_col_gridTeam2,-1
                                          call                    far ptr  Dehighlight_Grid_team2
-              
                                          ret
 move_piecet2 endp
-
-
-
-
     ;responsible for printing the message of game over notification
 game_over_notification proc far
                                          mov                     ax,0600h
@@ -6034,6 +6456,177 @@ team2_highlighted_cells_existing proc far
                                          ret
 team2_highlighted_cells_existing endp
     ; responsible for all the game logic
+
+free_piece proc far
+                                  
+                                       mov  cell_number,1
+
+                   free_piece_loop:
+                                         mov                     ah,2CH
+                                         INT                     21h
+                              
+                                         mov                     hrs,ch
+                                         mov                     min,cl
+                                         mov                     sec,dh
+                                         mov                     ebx ,3600
+                                         mov                     eax,0
+                                         mov                     al,hrs
+                                         mul                     ebx
+                                         mov                     ecx,eax
+                                         mov                     ebx ,60
+                                         mov                     eax,0
+                                         mov                     al,min
+                                         mul                     ebx
+                                         add                     ecx,eax
+                                         mov                     edx,0
+                                         mov                     dl,sec
+                                         add                     ecx,edx
+                                         mov                     edx,ecx
+                                         mov                     time_to_compaire,edx
+                                         call  far ptr            Get_Cell_Points
+                                         mov                     al,colgrid
+                                         dec                     al
+                                         mov                     bl,4
+                                         mul                     bl
+                                         mov                     cx,ax
+                                         mov                     al,rowgrid
+                                         dec                     al
+                                         mov                     ah,0
+                                         mov                     bl,32
+                                         mul                     bl
+                                         add                     ax,offset time1
+                                         add                     ax,cx
+                                         mov                     si,ax
+                                         mov                     ebx,[si]
+                                         mov                     edx,time_to_compaire
+                                         sub                     edx,ebx
+                                         cmp                     edx ,3
+                                         jb                      not_free
+
+                                         mov                     al,rowgrid
+                                         dec                     al
+                                         mov                     bl,8
+                                         mul                     bl
+                                         mov                     bl,colgrid
+                                         mov                     bh,0
+                                         dec                     bl
+                                         add                     ax,bx
+                                         mov                     di ,offset frozen_row1
+                                         add                     di,ax
+                                         mov                     al ,'f'
+                                         cmp                    [di],al
+                                         je                       not_free
+                                         mov                     [di],al
+
+                                         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+                                         dec                     rowgrid
+                                         dec                     colgrid
+
+                                         mov                     ax,0
+                                         mov                     operand,24
+                                         mov                     dl,operand
+                                         mov                     al,rowgrid
+                                         mul                     dl
+                                         mov                     bx,ax
+
+                                         mov                     ax,0
+                                         mov                     operand,3
+                                         mov                     dl,operand
+                                         mov                     al,colgrid
+                                         mul                     dl
+                                         mov                     cx,ax                                                            ;Sure OV will not happen
+                         
+                                         mov                     bp, offset grid_row1
+                                         add                     bp,bx
+                                         add                     bp,cx
+                                         mov                     si,bp
+                                       
+                                        call  far ptr DrawOriginalCellColor
+                                        ; mov al,1
+                                        ; call far ptr HIGHLIGHT_selected
+                                        ; mov al,1
+                                        ; call far ptr HIGHLIGHTSelectedTeam2
+                                   
+                                        
+
+not_free:
+
+                                          inc cell_number
+                                          cmp cell_number,65
+                                          jne  free_piece_loop
+ 
+
+ret
+free_piece endp
+
+
+
+freeze_piece proc far
+                                  
+                                       mov  cell_number,1
+
+                   freeze_piece_loop:
+                                         mov                     ah,2CH
+                                         INT                     21h
+                              
+                                         mov                     hrs,ch
+                                         mov                     min,cl
+                                         mov                     sec,dh
+                                         mov                     ebx ,3600
+                                         mov                     eax,0
+                                         mov                     al,hrs
+                                         mul                     ebx
+                                         mov                     ecx,eax
+                                         mov                     ebx ,60
+                                         mov                     eax,0
+                                         mov                     al,min
+                                         mul                     ebx
+                                         add                     ecx,eax
+                                         mov                     edx,0
+                                         mov                     dl,sec
+                                         add                     ecx,edx
+                                         mov                     edx,ecx
+                                         mov                     time_to_compaire,edx
+                                         call  far ptr            Get_Cell_Points
+                                         mov                     al,colgrid
+                                         dec                     al
+                                         mov                     bl,4
+                                         mul                     bl
+                                         mov                     cx,ax
+                                         mov                     al,rowgrid
+                                         dec                     al
+                                         mov                     ah,0
+                                         mov                     bl,32
+                                         mul                     bl
+                                         add                     ax,offset time1
+                                         add                     ax,cx
+                                         mov                     si,ax
+                                         mov                     ebx,[si]
+                                         mov                     edx,time_to_compaire
+                                         sub                     edx,ebx
+                                         cmp                     edx ,3
+                                         ja                      not_freeze
+
+                                       
+                                        MY_border    Currrow,Currcol
+                                        
+                                        
+
+not_freeze:
+
+                                          inc cell_number
+                                          cmp cell_number,65
+                                          jne  free_piece_loop
+ 
+
+call far ptr free_piece
+ret
+freeze_piece endp
+
+
+
+
+
 main proc far
                                          mov                     ax,@data
                                          mov                     ds,ax
@@ -6140,14 +6733,14 @@ main proc far
     
     exit_connection:                     
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-                                         MoveCursor              12,40
+                                         MoveCursor              12,15
                                          mov                     ah, 9
-                                         mov                     dx, offset name1
+                                         mov                     dx, offset welcome_msg
                                          add                     dx,2
                                          int                     21h
 
                                          
-                                         MoveCursor              13,60
+                                         MoveCursor              12,33
                                          mov                     ah, 9
                                          mov                     dx, offset name2
                                          add                     dx,2
