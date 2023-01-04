@@ -26,7 +26,13 @@ Two functions are to be implemented: chatting, and a two-player real-time chess 
   <br> 
   
   <h2 align='center'>🎮 Gameplay 🎮 </h2>
-  <div align='center'><img  src="/Images/EnterName.png" title="All rights resrved."></div>
+  <br>
+  
+  
+  <div align='center'>
+   <p>First U Enter Your Own Name</p>
+   <img  src="/Images/EnterName.png" title="All rights resrved.">
+</div>
   
   
 
