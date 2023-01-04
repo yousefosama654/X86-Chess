@@ -23,11 +23,25 @@ Two functions are to be implemented: chatting, and a two-player real-time chess 
   <br> 🔴 <b>Grid.asm</b> which is the game itself, it uses all two other files.
   <br>
   If you're using DOSBOX through VSCODE then simply copy the content of this folder to the extensions workspace (as in the .txt) and that should then run by default, otherwise   you might just use the normal incantation of masm-ing each file then linking all. Regardless, you need a virtual port simulator for this (to simulate playing/chatting on two different computers)
-  <br> <h4> <b> That's why, alternatively </b> You can simply just run Grid.asm: (Both players on the same computer): <br> </h4>
-  ♠️ Open the emulator and type <b>tasm Grid.asm</b><br>
-  ♣️ Then type <b>link Grid.obj</b><br>
-  ♥️ Now type <b>Grid</b>
-</p> 
+  <br> 
+  
+  <h2 align='center'>🎮 Gameplay 🎮 </h2>
+  <div align='center'>gsdfgsdf</div>
+  
+  
+ ### Installation Guide
+1. Download all files in this Repository. ( Make sure it has the same location format like in this repository )
+2. Download `TASM` that integrated with `DOSBox`. ( Not the GUI TASM )
+3. Copy all files and folder that have been downloaded in this Repository to `TASM` folders.
+4. Mount the `Phase 3` Folder in the `DOSBox`.
+5. Assemble the `main.asm`in the `DOSBox` using `TASM`.
+6. TLINK the `Game.obj`.
+7. Type `Game.exe` and Enjoy the Game!!!
+
+### Playing Guide For Both Teams
+1. Use `UP`, `DOWN`, `LEFT`, `RIGHT` buttons to move your marker / unit.
+2. Use `ENTER` to confirms the move.
+3. Use `F4` to Immediate Exit from Game.
 
 <!-- readme: collaborators -start -->
 <table  align='center'> 
