@@ -45,7 +45,7 @@ other piece at this time.It is required to connect 2 PCs through a Simple networ
 </div>
   
 <div align='center'>
-   <h3>**Then U Send A Chat Inviation and Waith For Acceptance**</h3>
+   <h3>**Then U Send A Chat Inviation and Wait For Acceptance**</h3>
    <br>
    <img  src="/Images/ChatInvitation.png" title="All rights resrved.">
 </div>
@@ -56,7 +56,7 @@ other piece at this time.It is required to connect 2 PCs through a Simple networ
 </div>
  
  <div align='center'>
-   <h3>**Then U Send A Game Inviation and Waith For Acceptance**</h3>
+   <h3>**Then U Send A Game Inviation and Wait For Acceptance**</h3>
    <br>
    <img  src="/Images/GameInvitation.png" title="All rights resrved.">
 </div>
