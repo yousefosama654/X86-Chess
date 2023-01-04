@@ -69,7 +69,7 @@ other piece at this time.It is required to connect 2 PCs through a Simple networ
  
   
   
- ### Installation Guide
+ ## Installation Guide
  
 1. Download all files in this Repository. ( Make sure it has the same location format like in this repository )
 2. Download `TASM` that integrated with `DOSBox`. ( Not the GUI TASM )
@@ -79,7 +79,7 @@ other piece at this time.It is required to connect 2 PCs through a Simple networ
 6. TLINK the `Game.obj`.
 7. Type `Game.exe` and Enjoy the Game!!!
 
-### Playing Guide For Both Teams
+## Playing Guide For Both Teams
 
 1. Use `UP`, `DOWN`, `LEFT`, `RIGHT` buttons to move your marker / unit.
 2. Use `ENTER` to confirms the move.
