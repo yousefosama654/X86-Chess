@@ -1,4 +1,4 @@
-<h1 align='center'>Real Time Chess</h1>
+<h1 align='center'>🎉Real Time Chess🎉</h1>
 <div align='center'>
    <img  src="/Images/logo.jpeg"  >
  </div>
