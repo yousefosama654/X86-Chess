@@ -24,6 +24,8 @@ Two functions are to be implemented: chatting, and a two-player real-time chess 
   <br>
   If you're using DOSBOX through VSCODE then simply copy the content of this folder to the extensions workspace (as in the .txt) and that should then run by default, otherwise   you might just use the normal incantation of masm-ing each file then linking all. Regardless, you need a virtual port simulator for this (to simulate playing/chatting on two different computers)
   <br> 
+  
+  
  ### Instalation Guide
 1. Download all files in this Repository. ( Make sure it has the same location format like in this repository )
 2. Download `TASM` that integrated with `DOSBox`. ( Not the GUI TASM )
