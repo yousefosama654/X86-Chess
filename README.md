@@ -35,7 +35,7 @@ Two functions are to be implemented: chatting, and a two-player real-time chess 
    <img  src="/Images/EnterName.png" title="All rights resrved.">
 </div>
   
-    <div align='center'>
+<div align='center'>
    <h3>**Then U Send A Chat Inviation and Waith For Acceptance**</h3>
    <br>
    <img  src="/Images/ChatInvitation.png" title="All rights resrved.">
@@ -43,7 +43,7 @@ Two functions are to be implemented: chatting, and a two-player real-time chess 
     <div align='center'>
    <h3>**Get Into Chat Mode Of The Game**</h3>
    <br>
-   <img  src="/Images/ChatInvitation.png" title="All rights resrved.">
+   <img  src="/Images/ChatModule.png" title="All rights resrved.">
 </div>
   
 
