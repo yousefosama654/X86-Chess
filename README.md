@@ -5,8 +5,17 @@
  <h2 align='center'> 🕮 Introduction & Background 🕮 </h2>
 <p align='justify'>
 This section presents an overview of the project requirements and constraints. Specific details are
-discussed later. It is required to connect 2 PCs through a Simple network, using serial communication.
-Two functions are to be implemented: chatting, and a two-player real-time chess game.
+discussed later.The Real-time Chess Game
+In this part, the users should be able to play a two-player real-time chess game. 
+The final target for
+each player is to win the chess game. The game is a popular Android game titled "Chezz: Play Fast
+Chess". In this project,Each player can move his pieces to win
+the game. The goal is to kill your opponent's king.
+The game is like any standard chess, each piece moves exactly like standard chess. The main
+difference is that there are no turns, which means one player can move multiple pieces while the other
+player didn't move any pieces. There is a countdown for each piece to be moved again, for example, if
+I moved the queen now, I can't move the same queen again for 2 seconds although I can move any
+other piece at this time.It is required to connect 2 PCs through a Simple network, using serial communication. Two functions are to be implemented: chatting, and a two-player real-time chess game.
   </p>
 <h2 align='center'>💻 Technologies used 💻 </h2>
 <div align='center'>
