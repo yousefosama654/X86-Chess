@@ -74,7 +74,7 @@ other piece at this time.It is required to connect 2 PCs through a Simple networ
 2. Download `TASM` that integrated with `DOSBox`. ( Not the GUI TASM )
 3. Copy all files and folder that have been downloaded in this Repository to `TASM` folders.
 4. Mount the `Phase3` Folder in the `DOSBox`.
-5. Assemble the `main.asm`in the `DOSBox` using `TASM`.
+5. Assemble the `Game.asm`in the `DOSBox` using `TASM`.
 6. TLINK the `Game.obj`.
 7. Type `Game.exe` and Enjoy the Game!!!
 
@@ -83,6 +83,7 @@ other piece at this time.It is required to connect 2 PCs through a Simple networ
 2. Use `ENTER` to confirms the move.
 3. Use `F4` to Immediate Exit from Game.
 
+ <h2 align='center'>⭐ Collaborators ⭐ </h2>
 <!-- readme: collaborators -start -->
 <table  align='center'> 
 <tr>
