@@ -30,7 +30,7 @@ Two functions are to be implemented: chatting, and a two-player real-time chess 
   
   
   <div align='center'>
-   <p>First U Enter Your Own Name</p>
+   <h2>First U Enter Your Own Name</h2>
    <img  src="/Images/EnterName.png" title="All rights resrved.">
 </div>
   
