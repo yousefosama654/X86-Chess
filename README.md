@@ -29,7 +29,7 @@ other piece at this time.It is required to connect 2 PCs through a Simple networ
    <p> <h4> Inside Modular Code you should find: </h4>
    🔵 <b>macros.inc</b> which has all the Macros that we've used (X86-Macro Library).
   <br> 🟡 <b>Graphics.inc</b> which includes all the graphics (assets) used in the game.
-  <br> 🔴 <b>Grid.asm</b> which is the game itself, it uses all two other files.
+  <br> 🔴 <b>Game.asm</b> which is the game itself, it uses all two other files.
   <br>
   If you're using DOSBOX through VSCODE then simply copy the content of this folder to the extensions workspace (as in the .txt) and that should then run by default, otherwise   you might just use the normal incantation of masm-ing each file then linking all. Regardless, you need a virtual port simulator for this (to simulate playing/chatting on two different computers)
   <br> 
@@ -73,7 +73,7 @@ other piece at this time.It is required to connect 2 PCs through a Simple networ
 1. Download all files in this Repository. ( Make sure it has the same location format like in this repository )
 2. Download `TASM` that integrated with `DOSBox`. ( Not the GUI TASM )
 3. Copy all files and folder that have been downloaded in this Repository to `TASM` folders.
-4. Mount the `Phase 3` Folder in the `DOSBox`.
+4. Mount the `Phase3` Folder in the `DOSBox`.
 5. Assemble the `main.asm`in the `DOSBox` using `TASM`.
 6. TLINK the `Game.obj`.
 7. Type `Game.exe` and Enjoy the Game!!!
