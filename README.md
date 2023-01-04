@@ -5,8 +5,17 @@
  <h2 align='center'> 🕮 Introduction & Background 🕮 </h2>
 <p align='justify'>
 This section presents an overview of the project requirements and constraints. Specific details are
-discussed later. It is required to connect 2 PCs through a Simple network, using serial communication.
-Two functions are to be implemented: chatting, and a two-player real-time chess game.
+discussed later.The Real-time Chess Game
+In this part, the users should be able to play a two-player real-time chess game. 
+The final target for
+each player is to win the chess game. The game is a popular Android game titled "Chezz: Play Fast
+Chess". In this project,Each player can move his pieces to win
+the game. The goal is to kill your opponent's king.
+The game is like any standard chess, each piece moves exactly like standard chess. The main
+difference is that there are no turns, which means one player can move multiple pieces while the other
+player didn't move any pieces. There is a countdown for each piece to be moved again, for example, if
+I moved the queen now, I can't move the same queen again for 2 seconds although I can move any
+other piece at this time.It is required to connect 2 PCs through a Simple network, using serial communication. Two functions are to be implemented: chatting, and a two-player real-time chess game.
   </p>
 <h2 align='center'>💻 Technologies used 💻 </h2>
 <div align='center'>
@@ -20,33 +29,63 @@ Two functions are to be implemented: chatting, and a two-player real-time chess 
    <p> <h4> Inside Modular Code you should find: </h4>
    🔵 <b>macros.inc</b> which has all the Macros that we've used (X86-Macro Library).
   <br> 🟡 <b>Graphics.inc</b> which includes all the graphics (assets) used in the game.
-  <br> 🔴 <b>Grid.asm</b> which is the game itself, it uses all two other files.
+  <br> 🔴 <b>Game.asm</b> which is the game itself, it uses all two other files.
   <br>
   If you're using DOSBOX through VSCODE then simply copy the content of this folder to the extensions workspace (as in the .txt) and that should then run by default, otherwise   you might just use the normal incantation of masm-ing each file then linking all. Regardless, you need a virtual port simulator for this (to simulate playing/chatting on two different computers)
   <br> 
   
   <h2 align='center'>🎮 Gameplay 🎮 </h2>
+  <br>
   
   
+  <div align='center'>
+   <h3>**First U Enter Your Own Names**</h3>
+   <br>
+   <img  src="/Images/EnterName.png" title="All rights resrved.">
+</div>
   
- ![Game](https://user-images.githubusercontent.com/93356614/210487203-62c86bf0-6892-4f3f-b479-0d5a7977fb74.gif)
+<div align='center'>
+   <h3>**Then U Send A Chat Inviation and Waith For Acceptance**</h3>
+   <br>
+   <img  src="/Images/ChatInvitation.png" title="All rights resrved.">
+</div>
+    <div align='center'>
+   <h3>**Get Into Chat Mode Of The Game**</h3>
+   <br>
+   <img  src="/Images/ChatModule.png" title="All rights resrved.">
+</div>
+ 
+ <div align='center'>
+   <h3>**Then U Send A Game Inviation and Waith For Acceptance**</h3>
+   <br>
+   <img  src="/Images/GameInvitation.png" title="All rights resrved.">
+</div>
 
+<div align='center'>
+   <h3>**Get Into Game Mode Of The Game with Inline Chat **</h3>
+   <br>
+   <img  src="/Images/KilledPiece.png" title="All rights resrved.">
+</div>
+ 
   
   
- ### Installation Guide
+ ## Installation Guide
+ 
 1. Download all files in this Repository. ( Make sure it has the same location format like in this repository )
 2. Download `TASM` that integrated with `DOSBox`. ( Not the GUI TASM )
 3. Copy all files and folder that have been downloaded in this Repository to `TASM` folders.
-4. Mount the `Phase 3` Folder in the `DOSBox`.
-5. Assemble the `main.asm`in the `DOSBox` using `TASM`.
+4. Mount the `Phase3` Folder in the `DOSBox`.
+5. Assemble the `Game.asm`in the `DOSBox` using `TASM`.
 6. TLINK the `Game.obj`.
 7. Type `Game.exe` and Enjoy the Game!!!
 
-### Playing Guide For Both Teams
+## Playing Guide For Both Teams
+
 1. Use `UP`, `DOWN`, `LEFT`, `RIGHT` buttons to move your marker / unit.
 2. Use `ENTER` to confirms the move.
 3. Use `F4` to Immediate Exit from Game.
 
+ <h2 align='center'>⭐ Collaborators ⭐ </h2>
 <!-- readme: collaborators -start -->
 <table  align='center'> 
 <tr>
