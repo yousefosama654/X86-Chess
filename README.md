@@ -45,9 +45,19 @@ Two functions are to be implemented: chatting, and a two-player real-time chess 
    <br>
    <img  src="/Images/ChatModule.png" title="All rights resrved.">
 </div>
-  
+ 
+ <div align='center'>
+   <h3>**Then U Send A Game Inviation and Waith For Acceptance**</h3>
+   <br>
+   <img  src="/Images/GameInvitation.png" title="All rights resrved.">
+</div>
 
-
+<div align='center'>
+   <h3>**Get Into Game Mode Of The Game with Inline Chat **</h3>
+   <br>
+   <img  src="/Images/KilledPiece.png" title="All rights resrved.">
+</div>
+ 
   
   
  ### Installation Guide
