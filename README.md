@@ -26,7 +26,7 @@ Two functions are to be implemented: chatting, and a two-player real-time chess 
   <br> 
   
   
- ### Instalation Guide
+ ### Installation Guide
 1. Download all files in this Repository. ( Make sure it has the same location format like in this repository )
 2. Download `TASM` that integrated with `DOSBox`. ( Not the GUI TASM )
 3. Copy all files and folder that have been downloaded in this Repository to `TASM` folders.
