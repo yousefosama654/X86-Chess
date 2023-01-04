@@ -26,7 +26,9 @@ Two functions are to be implemented: chatting, and a two-player real-time chess 
   <br> 
   
   <h2 align='center'>🎮 Gameplay 🎮 </h2>
-  <div align='center'></div>
+  <div align='center'>gsdfgsdf</div>
+  
+  
  ### Installation Guide
 1. Download all files in this Repository. ( Make sure it has the same location format like in this repository )
 2. Download `TASM` that integrated with `DOSBox`. ( Not the GUI TASM )
