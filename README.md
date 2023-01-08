@@ -4,6 +4,7 @@
  </div>
  <h2 align='center'> 🕮 Introduction & Background 🕮 </h2>
 <p align='justify'>
+<blockquote>
 This section presents an overview of the project requirements and constraints. Specific details are
 discussed later.The Real-time Chess Game
 In this part, the users should be able to play a two-player real-time chess game. 
@@ -17,6 +18,7 @@ player didn't move any pieces. There is a countdown for each piece to be moved a
 I moved the queen now, I can't move the same queen again for 2 seconds although I can move any
 other piece at this time.It is required to connect 2 PCs through a Simple network, using serial communication. Two functions are to be implemented: chatting, and a two-player real-time chess game.
   </p>
+  </blockquote>
 <h2 align='center'>💻 Technologies used 💻 </h2>
 <div align='center'>
     <p> It's a microprocessors course project, so...</p>
